@@ -1,0 +1,16 @@
+2018-07-16 15:50:19.201 INFO - pairDevice: Unpairing device
+2018-07-16 15:50:19.645 INFO - pairDevice: Device paired successfully
+2018-07-16 15:50:20.584 DEBUG - run: Device color:#e1ccb7
+2018-07-16 15:50:20.584 INFO - run: {'imiei': u'354957072685772', 'os_version': u'11.3.1', 'battery_health': 88, 'region_code': u'LL/A', 'battery_cycles': u'218', 'serial_number': u'DNPS13YWHFLP', 'model': u'iPhone8,1', 'storage': 32, 'colour': 'gold', 'model_number': u'MN1K2'}
+2018-07-16 15:50:20.596 DEBUG - _new_conn: Starting new HTTP connection (1): localhost:8888
+2018-07-16 15:50:21.561 DEBUG - _make_request: http://localhost:8888 "POST /phonesApi/add HTTP/1.1" 200 38
+2018-07-16 15:50:21.563 INFO - run: {"result":{"id":51,"message":"saved"}}
+2018-07-16 15:52:21.865 INFO - pairDevice: Unpairing device
+2018-07-16 15:52:21.887 INFO - pairDevice: Not paired yet
+2018-07-16 15:52:23.025 INFO - pairDevice: Device paired successfully
+2018-07-16 15:52:31.478 DEBUG - run: Device color:#b4b5b9
+2018-07-16 15:52:31.478 INFO - run: {'imiei': u'352022071670846', 'os_version': u'11.3.1', 'battery_health': 85, 'region_code': u'CL/A', 'battery_cycles': u'829', 'serial_number': u'DNQR41TRG5MG', 'model': u'iPhone7,2', 'storage': 64, 'colour': 'space grey', 'model_number': u'MG3H2'}
+2018-07-16 15:52:31.484 DEBUG - _new_conn: Starting new HTTP connection (1): localhost:8888
+2018-07-16 15:52:32.456 DEBUG - _make_request: http://localhost:8888 "POST /phonesApi/add HTTP/1.1" 200 39
+2018-07-16 15:52:32.458 INFO - run: {"result":{"id":168,"message":"saved"}}
+2018-07-16 16:15:01.267 INFO - <module>: Terminated by keyboard
