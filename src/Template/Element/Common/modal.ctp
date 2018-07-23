@@ -241,7 +241,7 @@
             var url = $(this).attr("href");
 
             // Start the loading icon on the modal
-            $('.modal-dialog').LoadingOverlay("show");
+            $(event.currentTarget).LoadingOverlay("show");
 
             $.ajax({
                 url: url,
@@ -256,7 +256,7 @@
                 }
             }).then(()=>{
                 // Hide the loading icon now
-                $('.modal-dialog').LoadingOverlay("hide");
+                $(event.currentTarget).LoadingOverlay("hide");
             });
 
         });
