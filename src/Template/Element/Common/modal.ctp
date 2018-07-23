@@ -252,9 +252,10 @@
                     printForm(res);
                 },
                 error:function(request, status, error) {
+                    showAlert("Something went wrong");
                     console.log("ajax call went wrong:" + request.responseText);
                 }
-            }).then(()=>{
+            }).always(()=>{
                 // Hide the loading icon now
                 $(event.currentTarget).LoadingOverlay("hide");
             });
@@ -284,7 +285,7 @@
                 {
                     // Only if defined otherwise don't print table
                     if (table_url && table_id) {
-                        getTable(table_url, table_id).then(()=>{
+                        getTable(table_url, table_id).always(()=>{
                             $('#' + table_id).LoadingOverlay("hide");
                         });
                     }
@@ -322,7 +323,7 @@
                 url: url,
                 type: "DELETE",
                 success: function(res) {
-                    getTable(table_url, table_id).then(()=>{
+                    getTable(table_url, table_id).always(()=>{
                         $('#' + table_id).LoadingOverlay("hide");
                     });
                     showAlert('Data deleted successfully');
