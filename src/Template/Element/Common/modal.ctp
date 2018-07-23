@@ -275,8 +275,7 @@
             var table_id = $(this).data("tableId");
             console.log($(".form-ajax").serialize());
 
-            if (table_id)
-                $('#' + table_id).LoadingOverlay("show");
+
             $.ajax({
                 type: "POST",
                 url: url,
@@ -285,7 +284,9 @@
                 {
                     // Only if defined otherwise don't print table
                     if (table_url && table_id) {
+                        $('#' + table_id).LoadingOverlay("show");
                         getTable(table_url, table_id).always(()=>{
+                            console.log('complete')
                             $('#' + table_id).LoadingOverlay("hide");
                         });
                     }
