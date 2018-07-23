@@ -48,7 +48,7 @@
         });
     }
     function getTable(url, table_id) {
-        $.ajax({
+        return $.ajax({
             type: "POST",
             url: url,
             dataType: 'html',
@@ -233,21 +233,30 @@
         $('body').on('click', '#phone-add', createPhoneRow);
         $('body').on('input', '#phone-selection .form-control', getListImiei);
 
+
+        // Get modal form (html form)
         $('body').on('click', '.modal-ajax-button', function(event){
 
             event.preventDefault();
             var url = $(this).attr("href");
+
+            // Start the loading icon on the modal
+            $('.modal-dialog').LoadingOverlay("show");
 
             $.ajax({
                 url: url,
                 dataType: 'html',
                 success: function(res) {
                     // Show modal with Form
+
                     printForm(res);
                 },
                 error:function(request, status, error) {
                     console.log("ajax call went wrong:" + request.responseText);
                 }
+            }).then(()=>{
+                // Hide the loading icon now
+                $('.modal-dialog').LoadingOverlay("hide");
             });
 
         });
@@ -255,6 +264,47 @@
 
 
 
+
+        $(".modal").on('submit', '.form-ajax', function(event) {
+            /* stop form from submitting normally */
+            event.preventDefault();
+            var $form = $(this),
+                url = $form.attr('action');
+            var table_url = $(this).data("tableUrl");
+            var table_id = $(this).data("tableId");
+            console.log($(".form-ajax").serialize());
+
+            if (table_id)
+                $('#' + table_id).LoadingOverlay("show");
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $(".form-ajax").serialize(), // serializes the form's elements.
+                success: function(res)
+                {
+                    // Only if defined otherwise don't print table
+                    if (table_url && table_id) {
+                        getTable(table_url, table_id).then(()=>{
+                            $('#' + table_id).LoadingOverlay("hide");
+                        });
+                    }
+                    printForm(res);
+                    console.log('printed form')
+
+                    $('#myModal').modal('hide');
+                    showAlert('Data updated successfully');
+
+
+                },
+                error:function(request, status, error) {
+                    console.log('Errore ');
+                    showAlert('Error occurred');
+                    printForm(request.responseText);
+                }
+            });
+        });
+
+        // Delete record from table
         $("body").on('click', '.delete-ajax-button', function(event) {
 
             event.preventDefault();
@@ -266,47 +316,19 @@
             var table_id = $(this).parents('.relative').data("tableId");
             if(!confirm('Are you sure you want to delete this record?'))
                 return;
+            if (table_id)
+                $('#' + table_id).LoadingOverlay("show");
             $.ajax({
                 url: url,
                 type: "DELETE",
                 success: function(res) {
-                    getTable(table_url, table_id);
+                    getTable(table_url, table_id).then(()=>{
+                        $('#' + table_id).LoadingOverlay("hide");
+                    });
                     showAlert('Data deleted successfully');
                 },
                 error:function(request, status, error) {
                     console.log("ajax call went wrong:" + request.responseText);
-                }
-            });
-        });
-        $(".modal").on('submit', '.form-ajax', function(event) {
-            /* stop form from submitting normally */
-            event.preventDefault();
-            var $form = $(this),
-                url = $form.attr('action');
-            var table_url = $(this).data("tableUrl");
-            var table_id = $(this).data("tableId");
-            console.log($(".form-ajax").serialize());
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: $(".form-ajax").serialize(), // serializes the form's elements.
-                success: function(res)
-                {
-                    // Only if defined otherwise don't print table
-                    if (table_url && table_id)
-                        getTable(table_url, table_id);
-
-                    printForm(res);
-                    console.log('printed form')
-
-                    $('#myModal').modal('hide');
-                    showAlert('Data updated successfully');
-
-
-                },
-                error:function(request, status, error) {
-                    console.log('Errore ');
-                    printForm(request.responseText);
                 }
             });
         });

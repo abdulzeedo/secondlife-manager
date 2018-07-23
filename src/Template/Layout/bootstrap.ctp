@@ -31,7 +31,9 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css'
     ]); ?>
     <?= $this->Html->script([
+
     'https://code.jquery.com/jquery-1.12.4.min.js',
+    'https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.5/dist/loadingoverlay.min.js',
     'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js'
     ]); ?>
@@ -102,7 +104,9 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
         echo '</div>';
         echo $this->Navbar->end();
     ?>
-
+    <div style='position: fixed; margin-right: 2rem; right: 0;z-index: 1000;'>
+        <div id="alert-box"></div>
+    </div>
 
     <?= $this->Flash->render() ?>
 

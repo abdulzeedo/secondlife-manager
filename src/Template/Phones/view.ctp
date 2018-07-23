@@ -4,9 +4,6 @@
  * @var \App\Model\Entity\Phone $phone
  */
 ?>
-<div style='position: fixed; margin-right: 2rem; right: 0;z-index: 1000;'>
-    <div id="alert-box"></div>
-</div>
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
         <?= $this->Panel->create();?>
