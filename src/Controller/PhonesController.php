@@ -424,7 +424,7 @@ class PhonesController extends AppController
     // Used to download software for diagnosis
     public function download(){
 
-
+        $this->autoRender= false;
         //  Write the config ini file
         $file = new File( WWW_ROOT.DS.'files'.DS.'IPhoneDiagnostics'.DS.'config.ini');
 
@@ -475,12 +475,12 @@ class PhonesController extends AppController
                 // Get real and relative path for current file
                 $filePath = $file->getRealPath();
                 $relativePath = substr($filePath, strlen($rootPath) + 1);
-
+                $stat = stat($filePath);
                 // Add current file to archive
                 $zip->addFile($filePath, $relativePath);
+                $zip->setExternalAttributesName($relativePath, ZipArchive::OPSYS_UNIX, $stat["mode"]);
             }
         }
-
         // Zip archive will be created only after closing object
         $zip->close();
     }

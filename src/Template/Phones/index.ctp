@@ -77,8 +77,7 @@
                 <td><?= h($phone->model_number) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $phone->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $phone->id]) ?>
-                    <?= $this->Html->link(__('connected'), ['action' => 'connected', $phone->id]) ?>
+                    <?= $this->Html->link(__('Edit'), ['action' => 'connected', $phone->id]) ?>
                     <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $phone->id], ['confirm' => __('Are you sure you want to delete # {0}?', $phone->id)]) ?>
                 </td>
             </tr>
