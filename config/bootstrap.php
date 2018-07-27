@@ -176,6 +176,7 @@ ServerRequest::addDetector('tablet', function ($request) {
 });
 Plugin::load('FrontendBridge', ['bootstrap' => true, 'routes' => true, 'autoload' => true]);
 Plugin::load('Bootstrap');
+Plugin::load('CsvView', ['routes' => true]);
 
 /*
  * Enable immutable time objects in the ORM.

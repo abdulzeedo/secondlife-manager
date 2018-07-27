@@ -11,6 +11,7 @@
 		"cakephp/plugin-installer": "^1.0",
 		"codekanzlei/cake-cktools": "^2.1",
 		"dts/ebay-sdk-php": "~14.0",
+		"friendsofcake/cakephp-csvview": "~3.0",
 		"friendsofcake/search": "^4.4",
 		"holt59/cakephp3-bootstrap-helpers": "dev-master",
 		"josegonzalez/dotenv": "2.*",

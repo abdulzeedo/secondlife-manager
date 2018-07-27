@@ -76,6 +76,15 @@
                 <td><?= h($phone->modified) ?></td>
             </tr>
             <tr>
+                <th scope="row"><?= __('Supplier') ?></th>
+                <?php if (!empty($phone->supplier_order)): ?>
+                <td>
+                    <?= h($phone->supplier_order->supplier->name) ?>
+                    (<?= h($phone->supplier_order->supplier->description) ?>)
+                </td>
+                <?php endif; ?>
+            </tr>
+            <tr>
                 <th scope="row"><?= __('Sold to') ?></th>
                 <td>
                 <?php foreach($phone->transactions as $transaction): ?>

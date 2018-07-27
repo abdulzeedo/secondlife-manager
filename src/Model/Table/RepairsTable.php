@@ -35,7 +35,7 @@ class RepairsTable extends Table
         parent::initialize($config);
 
         $this->setTable('repairs');
-        $this->setDisplayField('id');
+        $this->setDisplayField('status');
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');

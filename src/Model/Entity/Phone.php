@@ -69,6 +69,8 @@ class Phone extends Entity
         'supplier_order_id' => true,
         'supplier_order' => true,
         'customers' => true,
+        'repairs' => true,
+        'itemReturns' => true,
         'transaction' => true,
         'connected_phones' => true,
     ];

@@ -18,6 +18,8 @@
     echo $this->Form->control('model_id', ['options' => $models, 'empty' => true]);
     echo $this->Form->control('user_id', ['options' => $users, 'empty' => true]);
     echo $this->Form->control('grade');
+    echo $this->Form->control('supplier_id', ['options' => $suppliers, 'empty' => true]);
+    echo $this->Form->control('Repairs.status', ['options' => $repairs, 'empty' => true]);
     echo $this->Panel->endGroup();
     // Match the search param in your table configuration
     echo $this->Form->control('q', ['label'=>'Search IMIEI or SERIAL #']);
@@ -26,13 +28,22 @@
     echo $this->Html->link('Reset', ['action' => 'index'], ['class' => 'btn btn-warning']);
     echo $this->Form->end();
     ?>
-    <div class="bulk-action">
-        <?= $this->Html->link(__('Set as sold'), ['controller' => 'Phones', 'action' => 'addTransactionsModal'],
-        ['class' => 'btn btn-default modal-ajax-button']) ?>
-        <?= $this->Html->link(__('Set suppliers'), ['controller' => 'Phones', 'action' => 'addSupplierItemsModal'],
-        ['class' => 'btn btn-default modal-ajax-button']) ?>
-    </div>
+</div>
+</div>
+    <div class="row">
+        <div class="col-md-12 text-right">
+        <div class="bulk-action">
+            <?= $this->Html->link(__('Set as sold'), ['controller' => 'Phones', 'action' => 'addTransactionsModal'],
+            ['class' => 'btn btn-default modal-ajax-button']) ?>
+            <?= $this->Html->link(__('Set suppliers'), ['controller' => 'Phones', 'action' => 'addSupplierItemsModal'],
+            ['class' => 'btn btn-default modal-ajax-button']) ?>
 
+            <?= $this->Html->link('Generate CSV', ['action' => 'export', '?' => $this->request->getQueryParams()], ['class' => 'btn btn-success']) ?>
+        </div>
+        </div>
+    </div>
+<div class="row">
+    <div class="col-md-12">
     <div class="table-responsive">
     <table cellpadding="0" cellspacing="0" class="table">
         <thead>

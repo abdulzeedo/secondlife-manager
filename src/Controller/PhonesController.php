@@ -25,7 +25,7 @@ class PhonesController extends AppController
         $this->loadComponent('Search.Prg', [
             // This is default config. You can modify "actions" as needed to make
             // the PRG component work only for specified methods.
-            'actions' => ['index']
+            'actions' => ['index', 'export']
         ]);
     }
 
@@ -48,6 +48,10 @@ class PhonesController extends AppController
      * @return \Cake\Http\Response|void
      */
 
+    public function debug() {
+        $this->autoRender = false;
+        debug($this->Phones->find()->contain(['Repairs']));
+    }
 
     public function index()
     {
@@ -55,7 +59,8 @@ class PhonesController extends AppController
         $query = $this->Phones
             // Use the plugins 'search' custom finder and pass in the
             // processed query params
-            ->find('search', ['search' => $this->request->getQueryParams()]);
+            ->find('search', ['search' => $this->request->getQueryParams()])
+            ->contain(['Repairs', 'ItemReturns', 'SupplierOrders.Suppliers'])->distinct();
 
         $this->paginate = [
             'contain' => ['Storages', 'Models', 'Colours', 'Users']
@@ -65,10 +70,56 @@ class PhonesController extends AppController
         $users = $this->Phones->Users->find('list', ['limit' => 200]);
         $models = $this->Phones->Models->find('list', ['limit' => 200]);
         $colours = $this->Phones->Colours->find('list', ['limit' => 200]);
+        $suppliers = $this->Phones->SupplierOrders->Suppliers->find('list', ['limit' => '200']);
+
+        $repairs = $this->getRepairDefaultValues()['status'];
+        $repairs[] = [
+            'text' => 'All repairs: any status',
+            'value' => 'any'
+        ];
+
         $this->set('phones', $this->paginate($query));
-        $this->set(compact('storages', 'models', 'colours', 'users'));
+        $this->set(compact('storages', 'models', 'colours', 'users', 'suppliers', 'repairs'));
     }
 
+    /**
+     * Used to generate a CSV file of the current table
+     */
+    public function export()
+    {
+        $query = $this->Phones
+            // Use the plugins 'search' custom finder and pass in the
+            // processed query params
+            ->find('search', ['search' => $this->request->getQueryParams()])
+            ->contain(['Repairs', 'ItemReturns', 'SupplierOrders.Suppliers'])
+            ->distinct()->all();
+
+        $_serialize = 'query';
+        $_header = ['Internal ID', 'IMIEI', 'Serial N', 'Status', 'Description', 'Comments',
+                    'Battery Cycles', 'Created', 'Supplier Name', 'Repair description'];
+        $_extract = [
+            'id',
+            'imiei',
+            'serial_number',
+            'status',
+            'label',
+            'comments',
+            'battery_cycles',
+            'created',
+            'supplier_order.supplier.name',
+            function ($row) {
+                $labelsList = '';
+                foreach($row['repairs'] as $repair) {
+                    $labelsList .= $repair['id']. ': Reason (' . $repair['reason']. ') '
+                        . ' Comments: ' . $repair['comments'];
+                }
+                return $labelsList;
+            }
+        ];
+
+        $this->viewBuilder()->setClassName('CsvView.Csv');
+        $this->set(compact('query', '_serialize', '_header', '_extract'));
+    }
     /**
      * View method
      *
@@ -80,7 +131,7 @@ class PhonesController extends AppController
     {
         $this->viewBuilder()->setLayout("bootstrap");
         $phone = $this->Phones->get($id, [
-            'contain' => ['Storages', 'Models', 'Colours', 'Repairs', 'ItemReturns', 'Transactions.Customers']
+            'contain' => ['Storages', 'Models', 'Colours', 'Repairs', 'ItemReturns', 'Transactions.Customers', 'SupplierOrders.Suppliers']
         ]);
 
         $this->set('phone', $phone);
@@ -268,17 +319,42 @@ class PhonesController extends AppController
             $imieiString = $this->request->getData("phones_list");
             $imieiList = explode("\n", $imieiString);
 
-            print_r($imieiList);
+
+            foreach($imieiList as $imiei) {
+                // Try to retrieve the object from database, if it doesn't exist
+                // create a new entity
+                $phone = $this->Phones->find('all', [
+                    'conditions' => ['imiei' => trim($imiei)]
+                ]);
+
+                debug($phone->isEmpty());
 
 
+                if ($phone->isEmpty()) {
+                    $phone = $this->Phones->newEntity($this->request->getData());
+                    $phone->imiei = $imiei;
+                    // Set serial_number the same as imiei to maintain unique key
+                    // and it might be used to check which iPhones have not yet tested.
+                    $phone->serial_number = $imiei;
+                }
+                else {
+                    // If it already exists update with data from the form such as
+                    // supplier order id
+                    $phone = $this->Phones->patchEntity($phone->first(), $this->request->getData());
+                }
 
-
-
-
+                /**
+                 * ATTENTION: function returns as soon as there is a validation error
+                 * TODO: add some validation error message here
+                 **/
+                if(!$this->Phones->save($phone)) {
+                    $this->response = $this->response->withStatus(400);
+                    return;
+                }
+            }
         }
 
         $suppliersList = $this->Phones->SupplierOrders->Suppliers->find('list', ['limit' => '200']);
-
         $this->set(compact('suppliersList'));
     }
 
@@ -374,7 +450,7 @@ class PhonesController extends AppController
             $this->Flash->error(__('The phone could not be deleted. Please, try again.'));
         }
 
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect($this->referer());
     }
 
     public function connected($id = null) {

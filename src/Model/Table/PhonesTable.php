@@ -56,7 +56,8 @@ class PhonesTable extends Table
         ]);
 
         $this->hasMany('Repairs', [
-            'foreignKey' => 'item_id'
+            'foreignKey' => 'item_id',
+            'joinType' => 'INNER'
         ]);
 
         $this->hasMany('ConnectedPhones', [
@@ -104,6 +105,27 @@ class PhonesTable extends Table
                 'wildcardAny' => '*',
                 'wildcardOne' => '?',
                 'field' => ['imiei', 'serial_number']
+            ])
+            ->add('supplier_id', 'Search.Callback', [
+                'callback' => function (Query $query, $args, $filter) {
+                    $query
+                        ->where('Suppliers.id', $args['supplier_id']);
+                }
+            ])
+            ->add('Repairs.status', 'Search.Callback', [
+                'callback' => function (Query $query, $args, $filter) {
+                    // If not any
+                    if (strcmp($args['Repairs.status'], "any") != 0){
+                        $query
+                            ->innerJoinWith('Repairs', function ($q) use ($args) {
+                                return $q->where(['Repairs.status' => $args['Repairs.status']]);
+                        });
+                    }
+                    else {
+                        $query->innerJoinWith('Repairs');
+                    }
+
+                }
             ]);
     }
 

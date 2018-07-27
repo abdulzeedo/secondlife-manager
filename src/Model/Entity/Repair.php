@@ -18,6 +18,7 @@ use Cake\ORM\Entity;
  */
 class Repair extends Entity
 {
+    protected $_virtual = ['label'];
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -34,7 +35,15 @@ class Repair extends Entity
         'comments' => true,
         'item_id' => true,
         'created' => true,
+        'label' => true,
         'modified' => true,
         'phone' => true
     ];
+
+    protected function _getLabel()
+    {
+
+        return $this->id . ': Reason (' . $this->reason . ') ' . $this->status . ' '
+                . ' Comments: ' . $this->comments;
+    }
 }
