@@ -10,9 +10,9 @@
 
 
     <?php
+    echo $this->Form->create(null, ['valueSources' => 'query', 'id' => 'home-filter-form']);
     echo $this->Panel->startGroup(['open' => true]);
     echo $this->Panel->create('Advanced Filters');
-    echo $this->Form->create(null, ['valueSources' => 'query']);
     echo $this->Form->control('storage_id', ['options' => $storages, 'empty' => true]);
     echo $this->Form->control('colour_id', ['options' => $colours, 'empty' => true]);
     echo $this->Form->control('model_id', ['options' => $models, 'empty' => true]);
