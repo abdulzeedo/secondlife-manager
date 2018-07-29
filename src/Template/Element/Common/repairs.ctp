@@ -31,8 +31,8 @@
         <td><?= h($repair->reason) ?></td>
         <td><?= h($repair->comments) ?></td>
         <td><?= h($repair->status) ?></td>
-        <td><?= h($repair->created) ?></td>
-        <td><?= h($repair->modified) ?></td>
+        <td><?= h($this->Time->i18nFormat($repair->created)) ?></td>
+        <td><?= h($this->Time->i18nFormat($repair->modified)) ?></td>
 
 
         <td class="actions">

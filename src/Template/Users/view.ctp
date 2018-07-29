@@ -38,11 +38,11 @@
         </tr>
         <tr>
             <th scope="row"><?= __('Created') ?></th>
-            <td><?= h($user->created) ?></td>
+            <td><?= h($this->Time->i18nFormat($user->created)) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Modified') ?></th>
-            <td><?= h($user->modified) ?></td>
+            <td><?= h($this->Time->i18nFormat($user->modified)) ?></td>
         </tr>
     </table>
 </div>

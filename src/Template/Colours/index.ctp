@@ -31,8 +31,8 @@
             <tr>
                 <td><?= $this->Number->format($colour->id) ?></td>
                 <td><?= h($colour->colour_name) ?></td>
-                <td><?= h($colour->created) ?></td>
-                <td><?= h($colour->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($colour->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($colour->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $colour->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $colour->id]) ?>

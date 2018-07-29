@@ -33,6 +33,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 
     <?= $this->Html->css([
     'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
+    'https://cdn.datatables.net/v/bs/dt-1.10.18/af-2.3.0/b-1.5.2/b-colvis-1.5.2/r-2.2.2/rg-1.0.3/datatables.min.css',
     'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css'
     ]); ?>
     <?= $this->Html->script([
@@ -40,7 +41,8 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     'https://code.jquery.com/jquery-1.12.4.min.js',
     'https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.5/dist/loadingoverlay.min.js',
     'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js'
+    'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js',
+    'https://cdn.datatables.net/v/bs/dt-1.10.18/af-2.3.0/b-1.5.2/b-colvis-1.5.2/r-2.2.2/rg-1.0.3/datatables.min.js'
     ]); ?>
     <?= $this->Html->script('jquery-barcodeListener.js') ?>
     <?= $this->fetch('meta') ?>

@@ -69,11 +69,15 @@
             </tr>
             <tr>
                 <th scope="row"><?= __('Created') ?></th>
-                <td><?= h($phone->created) ?></td>
+                <td><?= h($this->Time->i18nFormat(
+                    $phone->created
+                    )) ?></td>
             </tr>
             <tr>
                 <th scope="row"><?= __('Modified') ?></th>
-                <td><?= h($phone->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat(
+                    $phone->modified
+                    )) ?></td>
             </tr>
             <tr>
                 <th scope="row"><?= __('Supplier') ?></th>

@@ -33,8 +33,8 @@
                 <td><?= $this->Number->format($transaction->id) ?></td>
                 <td><?= $transaction->has('customer') ? $this->Html->link($transaction->customer->name, ['controller' => 'Customers', 'action' => 'view', $transaction->customer->id]) : '' ?></td>
                 <td><?= $transaction->has('phone') ? $this->Html->link($transaction->phone->label, ['controller' => 'Phones', 'action' => 'view', $transaction->phone->id]) : '' ?></td>
-                <td><?= h($transaction->created) ?></td>
-                <td><?= h($transaction->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($transaction->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($transaction->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $transaction->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $transaction->id]) ?>

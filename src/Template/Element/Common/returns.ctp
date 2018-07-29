@@ -31,8 +31,8 @@
         <td><?= h($return->status) ?></td>
         <td><?= h($return->refund) ?></td>
         <td><?= h($return->comments) ?></td>
-        <td><?= h($return->created) ?></td>
-        <td><?= h($return->modified) ?></td>
+        <td><?= h($this->Time->i18nFormat($return->created)) ?></td>
+        <td><?= h($this->Time->i18nFormat($return->modified)) ?></td>
 
 
         <td class="actions">

@@ -31,8 +31,8 @@
                 <td><?= $this->Number->format($supplier->id) ?></td>
                 <td><?= h($supplier->name) ?></td>
                 <td><?= h($supplier->location) ?></td>
-                <td><?= h($supplier->created) ?></td>
-                <td><?= h($supplier->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($supplier->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($supplier->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $supplier->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $supplier->id]) ?>

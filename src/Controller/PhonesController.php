@@ -2,7 +2,9 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Core\Configure;
 use Cake\Filesystem\File;
+use Cake\I18n\FrozenTime;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ZipArchive;
@@ -27,6 +29,7 @@ class PhonesController extends AppController
             // the PRG component work only for specified methods.
             'actions' => ['index', 'export']
         ]);
+
     }
 
     public function imieiList($imiei = '') {
@@ -53,6 +56,24 @@ class PhonesController extends AppController
         debug($this->Phones->find()->contain(['Repairs']));
     }
 
+    public function getPhoneDetails($id = null) {
+
+        if ($id != null && $this->request->is(['ajax', 'post', 'get'])) {
+            $phone = $this->Phones->find('all')
+                ->where(['Phones.id' => $id])
+                ->contain(['Repairs', 'SupplierOrders.Suppliers', 'ItemReturns', 'Transactions.Customers']);
+
+            FrozenTime::setJsonEncodeFormat('dd-MM-yyyy HH:mm:ss');
+            FrozenTime::setDefaultLocale('it-IT');
+            $this->viewBuilder()->setClassName('Json');
+            $phone = $phone->first();
+
+            $this->set(compact(['phone']));
+            $this->set('_serialize', ['phone']);
+
+        }
+    }
+
     public function index()
     {
         $this->viewBuilder()->setLayout('bootstrap');
@@ -62,9 +83,9 @@ class PhonesController extends AppController
             ->find('search', ['search' => $this->request->getQueryParams()])
             ->contain(['Repairs', 'ItemReturns', 'SupplierOrders.Suppliers'])->distinct();
 
-        $this->paginate = [
-            'contain' => ['Storages', 'Models', 'Colours', 'Users']
-        ];
+        $query->contain(
+            ['Storages', 'Models', 'Colours', 'Users']
+        );
 
         $storages = $this->Phones->Storages->find('list', ['limit' => 200]);
         $users = $this->Phones->Users->find('list', ['limit' => 200]);
@@ -78,7 +99,7 @@ class PhonesController extends AppController
             'value' => 'any'
         ];
 
-        $this->set('phones', $this->paginate($query));
+        $this->set('phones', $query->all());
         $this->set(compact('storages', 'models', 'colours', 'users', 'suppliers', 'repairs'));
     }
 

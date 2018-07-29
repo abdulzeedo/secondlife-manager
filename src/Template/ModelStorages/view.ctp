@@ -34,11 +34,11 @@
         </tr>
         <tr>
             <th scope="row"><?= __('Created') ?></th>
-            <td><?= h($modelStorage->created) ?></td>
+            <td><?= h($this->Time->i18nFormat($modelStorage->created)) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Modified') ?></th>
-            <td><?= h($modelStorage->modified) ?></td>
+            <td><?= h($this->Time->i18nFormat($modelStorage->modified)) ?></td>
         </tr>
     </table>
 </div>

@@ -34,11 +34,11 @@
         </tr>
         <tr>
             <th scope="row"><?= __('Created') ?></th>
-            <td><?= h($modelColour->created) ?></td>
+            <td><?= h($this->Time->i18nFormat($modelColour->created)) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Modified') ?></th>
-            <td><?= h($modelColour->modified) ?></td>
+            <td><?= h($this->Time->i18nFormat($modelColour->modified)) ?></td>
         </tr>
     </table>
 </div>

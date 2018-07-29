@@ -42,11 +42,11 @@
         </tr>
         <tr>
             <th scope="row"><?= __('Created') ?></th>
-            <td><?= h($model->created) ?></td>
+            <td><?= h($this->Time->i18nFormat($model->created)) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Modified') ?></th>
-            <td><?= h($model->modified) ?></td>
+            <td><?= h($this->Time->i18nFormat($model->modified)) ?></td>
         </tr>
     </table>
     <div class="related">
@@ -66,8 +66,8 @@
                 <td><?= h($modelColours->id) ?></td>
                 <td><?= h($modelColours->colour_id) ?></td>
                 <td><?= h($modelColours->model_id) ?></td>
-                <td><?= h($modelColours->created) ?></td>
-                <td><?= h($modelColours->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($modelColours->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($modelColours->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['controller' => 'ModelColours', 'action' => 'view', $modelColours->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['controller' => 'ModelColours', 'action' => 'edit', $modelColours->id]) ?>
@@ -95,8 +95,8 @@
                 <td><?= h($modelStorages->id) ?></td>
                 <td><?= h($modelStorages->storage_id) ?></td>
                 <td><?= h($modelStorages->model_id) ?></td>
-                <td><?= h($modelStorages->created) ?></td>
-                <td><?= h($modelStorages->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($modelStorages->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($modelStorages->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['controller' => 'ModelStorages', 'action' => 'view', $modelStorages->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['controller' => 'ModelStorages', 'action' => 'edit', $modelStorages->id]) ?>
@@ -140,8 +140,8 @@
                 <td><?= h($phones->grade) ?></td>
                 <td><?= h($phones->status) ?></td>
                 <td><?= h($phones->storage_id) ?></td>
-                <td><?= h($phones->created) ?></td>
-                <td><?= h($phones->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($phones->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($phones->modified)) ?></td>
                 <td><?= h($phones->comments) ?></td>
                 <td><?= h($phones->model_id) ?></td>
                 <td><?= h($phones->colour_id) ?></td>

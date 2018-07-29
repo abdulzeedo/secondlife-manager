@@ -33,8 +33,8 @@
                 <td><?= h($repair->reason) ?></td>
                 <td><?= h($repair->status) ?></td>
                 <td><?= $repair->has('phone') ? $this->Html->link($repair->phone->label.' - '.$repair->phone->imiei, ['controller' => 'Phones', 'action' => 'view', $repair->phone->id]) : '' ?></td>
-                <td><?= h($repair->created) ?></td>
-                <td><?= h($repair->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($repair->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($repair->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $repair->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $repair->id]) ?>

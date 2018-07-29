@@ -15,7 +15,12 @@
 namespace App\Controller;
 
 use Cake\Controller\Controller;
+use Cake\Core\Configure;
 use Cake\Event\Event;
+use Cake\I18n\Date;
+use Cake\I18n\FrozenDate;
+use Cake\I18n\FrozenTime;
+use Cake\I18n\Time;
 use \FrontendBridge\Lib\FrontendBridgeTrait;
 /**
  * Application Controller
@@ -64,6 +69,10 @@ class AppController extends Controller
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
         $this->loadComponent('FrontendBridge.FrontendBridge');
+        Time::setDefaultLocale('it-IT'); // For any mutable DateTime
+        FrozenTime::setDefaultLocale('it-IT'); // For any immutable DateTime
+        Date::setDefaultLocale('it-IT'); // For any mutable Date
+        FrozenDate::setDefaultLocale('it-IT'); // For any immutable Date
 
 
         /*
@@ -99,13 +108,16 @@ class AppController extends Controller
 
         // Allow the display action so our pages controller
         // continues to work. Also enable the read only actions.
-        $this->Auth->allow(['display', 'view', 'index']);
+//        $this->Auth->allow([]);
     }
 
 
     public function beforeRender(Event $event) {
         if ($this->Auth)
-        $this->set('user', $this->Auth->user());
+            $this->set('user', $this->Auth->user());
+
+//        Configure::write('TimeZone', 'Europe/Rome');
+
 
     }
     public function isAuthorized($user)
