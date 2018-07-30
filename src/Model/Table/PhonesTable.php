@@ -109,7 +109,7 @@ class PhonesTable extends Table
             ->add('supplier_id', 'Search.Callback', [
                 'callback' => function (Query $query, $args, $filter) {
                     $query
-                        ->where('Suppliers.id', $args['supplier_id']);
+                        ->where(['Suppliers.id' => $args['supplier_id']]);
                 }
             ])
             ->add('Repairs.status', 'Search.Callback', [
