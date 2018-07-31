@@ -53,7 +53,8 @@ class PhonesController extends AppController
 
     public function debug() {
         $this->autoRender = false;
-        debug($this->Phones->find()->contain(['Repairs']));
+        debug('hah');
+        debug($this->Phones->get(["id" => "374"]));
     }
 
     public function getPhoneDetails($id = null) {
@@ -341,15 +342,15 @@ class PhonesController extends AppController
             $imieiList = explode("\n", $imieiString);
 
 
-            foreach($imieiList as $imiei) {
+            foreach($imieiList as $imieiWithSpaces) {
                 // Try to retrieve the object from database, if it doesn't exist
                 // create a new entity
+
+                $imiei = trim($imieiWithSpaces);
+
                 $phone = $this->Phones->find('all', [
-                    'conditions' => ['imiei' => trim($imiei)]
+                    'conditions' => ['imiei' => $imiei]
                 ]);
-
-                debug($phone->isEmpty());
-
 
                 if ($phone->isEmpty()) {
                     $phone = $this->Phones->newEntity($this->request->getData());
