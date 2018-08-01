@@ -51,7 +51,7 @@
     echo $this->Form->control('user_id', ['options' => $users, 'empty' => true]);
     echo $this->Form->control('grade');
     echo $this->Form->control('supplier_id', ['options' => $suppliers, 'empty' => true]);
-    echo $this->Form->control('Repairs.status', ['options' => $repairs, 'empty' => true]);
+    echo $this->Form->control('Repairs.status', ['options' => $repairs, 'empty' => true, 'label' => 'Repairs status']);
     echo $this->Panel->endGroup();
     // Match the search param in your table configuration
     echo $this->Form->control('q', ['label'=>'Search IMIEI or SERIAL #']);

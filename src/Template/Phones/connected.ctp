@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col-xs-12 col-md-4">
             <div class="">
-                <?= $this->Form->create($phone, ['horizontal' => false]) ?>
+                <?= $this->Form->create($phone, ['horizontal' => false, 'id' => 'edit-phone-form']) ?>
                 <br>
                 <fieldset>
 
@@ -64,10 +64,7 @@
             </div>
         </div>
         <div class="col-xs-12 col-md-8">
-            <br>
-            <br>
-            <br>
-            <br>
+            <div class="alert alert-success" id="edit-phone-form-alert" role="alert">Nothing to submit</div>
             <?php
                 echo $this->Panel->create($phone->label);
 
@@ -147,3 +144,33 @@
         </div>
     </div>
 </div>
+<script>
+    unsavedForm = function(event) {
+        form.data("changed", true);
+        console.log(event);
+        let field = $(event.target);
+        field.parent().addClass("has-warning");
+        $('#edit-phone-form-alert').html('You might have un-saved data.')
+            .removeClass("alert-success")
+            .addClass("alert-warning");
+        $(window).on("beforeunload", function() {
+            return "Are you sure? The form has unsubmitted changes!";
+        });
+    }
+    removeBeforeUnload = function(event) {
+        $(window).off("beforeunload");
+        return true;
+    }
+
+    form = $("#edit-phone-form");
+
+    form.on('input', undefined, unsavedForm);
+    form.on('changed.bs.select', unsavedForm);
+    form.on('submit', removeBeforeUnload);
+
+
+
+
+
+
+</script>
