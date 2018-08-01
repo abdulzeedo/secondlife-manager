@@ -174,6 +174,7 @@
         getPhoneDetails(rowData[0])
             .then((response) => {
                 phone = response.phone;
+
                div.html(
                    "<table class='table table-bordered table-hover'>" +
                    "<tbody>" +
@@ -199,7 +200,6 @@
                    "</table>" +
                    "<p><b>Repairs:</b></p>" +
                    (phone.repairs.length !== 0 ?
-                           (
                                "<table class='table table-bordered table-hover'>" +
                                "<thead>" +
                                "<tr>" +
@@ -212,23 +212,20 @@
                                "</tr>" +
                                "</thead>" +
                                "<tbody>" +
-                               "<tr>" +
-                               "" +
                                $.map(phone.repairs, (repair, i) => {
-                                   return  `<td>${repair.id} </td>` +
+                                   return "<tr>" +
+                                       `<td>${repair.id} </td>` +
                                        `<td>${repair.reason} </td>` +
                                        `<td>${repair.status} </td>` +
                                        `<td>${repair.comments} </td>` +
                                        `<td>${repair.created} </td>` +
-                                       `<td>${repair.modified} </td>`
+                                       `<td>${repair.modified} </td>` +
+                                       "</tr>"
                                }).join() +
-                               "</td>" +
-                               "</tr>" +
                                "</tbody>" +
                                "</table>"
-                           )
-                   : '<p>No repairs found.</p>')
 
+                   : '<p>No repairs found.</p>')
                    + "<p><b>Returns: </b></p>" +
                    (phone.item_returns.length !== 0 ?
                            (
@@ -244,19 +241,17 @@
                                "</tr>" +
                                "</thead>" +
                                "<tbody>" +
-                               "<tr>" +
-                               "" +
                                $.map(phone.item_returns, (itemReturn, i) => {
-                                   return  `<td>${itemReturn.id} </td>` +
+                                   return "<tr>" +
+                                       `<td>${itemReturn.id} </td>` +
                                        `<td>${itemReturn.reason} </td>` +
                                        `<td>${itemReturn.status} </td>` +
                                        `<td>${itemReturn.refund} </td>` +
                                        `<td>${itemReturn.comments} </td>` +
                                        `<td>${itemReturn.created} </td>` +
-                                       `<td>${itemReturn.modified} </td>`
+                                       `<td>${itemReturn.modified} </td>` +
+                                       "</tr>"
                                }).join() +
-                               "</td>" +
-                               "</tr>" +
                                "</tbody>" +
                                "</table>"
                            )
@@ -275,6 +270,7 @@
             });
         // Do some style formatting to the div
         div.addClass('sub-table');
+        console.log(div.html())
         return div;
     }
 </script>
