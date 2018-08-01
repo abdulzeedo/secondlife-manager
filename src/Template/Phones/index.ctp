@@ -141,7 +141,6 @@
     });
 
     function getPhoneDetails(input) {
-        console.log(input)
         return $.ajax({
             type: "post",
             url: '/phones/getPhoneDetails/' + input,
@@ -270,7 +269,6 @@
             });
         // Do some style formatting to the div
         div.addClass('sub-table');
-        console.log(div.html())
         return div;
     }
 </script>
