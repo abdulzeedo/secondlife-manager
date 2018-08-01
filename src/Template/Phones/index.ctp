@@ -220,7 +220,7 @@
                                        `<td>${repair.created} </td>` +
                                        `<td>${repair.modified} </td>` +
                                        "</tr>"
-                               }).join() +
+                               }).join("") +
                                "</tbody>" +
                                "</table>"
 
@@ -234,6 +234,7 @@
                                "<th>ID</th>" +
                                "<th>Reason</th>" +
                                "<th>Status</th>" +
+                               "<th>Refund Amount</th>" +
                                "<th>Comments</th>" +
                                "<th>Created</th>" +
                                "<th>Modified</th>" +
@@ -250,7 +251,7 @@
                                        `<td>${itemReturn.created} </td>` +
                                        `<td>${itemReturn.modified} </td>` +
                                        "</tr>"
-                               }).join() +
+                               }).join("") +
                                "</tbody>" +
                                "</table>"
                            )
