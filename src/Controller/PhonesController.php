@@ -100,8 +100,10 @@ class PhonesController extends AppController
             'value' => 'any'
         ];
 
+        $repairsReason = $this->getRepairDefaultValues()['reason'];
+
         $this->set('phones', $query->all());
-        $this->set(compact('storages', 'models', 'colours', 'users', 'suppliers', 'repairs'));
+        $this->set(compact('storages', 'models', 'colours', 'users', 'suppliers', 'repairs', 'repairsReason'));
     }
 
     /**

@@ -92,7 +92,7 @@ class PhonesTable extends Table
             ->value('storage_id')
             ->value('model_id')
             ->value('grade')
-            ->value('colour_id')
+            ->value('colour_id', ['multiValue' => true])
             ->value('user_id')
             // Here we will alias the 'q' query param to search the `Articles.title`
             // field and the `Articles.content` field, using a LIKE match, with `%`
@@ -109,22 +109,29 @@ class PhonesTable extends Table
             ->add('supplier_id', 'Search.Callback', [
                 'callback' => function (Query $query, $args, $filter) {
                     $query
-                        ->where(['Suppliers.id' => $args['supplier_id']]);
+                        ->where(['Suppliers.id IN' => $args['supplier_id']]);
                 }
             ])
             ->add('Repairs.status', 'Search.Callback', [
                 'callback' => function (Query $query, $args, $filter) {
                     // If not any
-                    if (strcmp($args['Repairs.status'], "any") != 0){
+                    if (!in_array("any", $args['Repairs.status'])) {
                         $query
                             ->innerJoinWith('Repairs', function ($q) use ($args) {
-                                return $q->where(['Repairs.status' => $args['Repairs.status']]);
+                                return $q->where(['Repairs.status IN' => $args['Repairs.status']]);
                         });
                     }
                     else {
                         $query->innerJoinWith('Repairs');
                     }
-
+                }
+            ])
+            ->add('Repairs.reason', 'Search.Callback', [
+                'callback' => function (Query $query, $args, $filter) {
+                    $query
+                        ->innerJoinWith('Repairs', function ($q) use ($args) {
+                            return $q->where(['Repairs.reason IN' => $args['Repairs.reason']]);
+                        });
                 }
             ]);
     }

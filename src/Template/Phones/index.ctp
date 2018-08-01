@@ -45,13 +45,22 @@
     echo $this->Form->create(null, ['valueSources' => 'query', 'id' => 'home-filter-form']);
     echo $this->Panel->startGroup(['open' => true]);
     echo $this->Panel->create('Advanced Filters');
+    echo '<div class="row">';
+    echo '<div class="col-md-6">';
     echo $this->Form->control('storage_id', ['options' => $storages, 'empty' => true]);
-    echo $this->Form->control('colour_id', ['options' => $colours, 'empty' => true]);
+    echo $this->Form->control('colour_id', ['multiple' => 'multiple', 'options' => $colours, 'empty' => true]);
     echo $this->Form->control('model_id', ['options' => $models, 'empty' => true]);
+        echo '</div><div class="col-md-6">';
     echo $this->Form->control('user_id', ['options' => $users, 'empty' => true]);
     echo $this->Form->control('grade');
-    echo $this->Form->control('supplier_id', ['options' => $suppliers, 'empty' => true]);
-    echo $this->Form->control('Repairs.status', ['options' => $repairs, 'empty' => true, 'label' => 'Repairs status']);
+        echo '</div><div class="col-md-12">';
+
+    echo $this->Form->control('supplier_id', ['multiple' => 'multiple', 'options' => $suppliers, 'empty' => true]);
+        echo '</div><div class="col-md-6">';
+    echo $this->Form->control('Repairs.status', ['multiple' => 'multiple', 'options' => $repairs, 'empty' => true, 'label' => 'Repairs status']);
+        echo '</div><div class="col-md-6">';
+    echo $this->Form->control('Repairs.reason', ['multiple' => 'multiple', 'options' => $repairsReason, 'empty' => true, 'label' => 'Repair reason']);
+    echo '</div></div>'; // Closing tag for row
     echo $this->Panel->endGroup();
     // Match the search param in your table configuration
     echo $this->Form->control('q', ['label'=>'Search IMIEI or SERIAL #']);
