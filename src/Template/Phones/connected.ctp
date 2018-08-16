@@ -9,33 +9,57 @@
     <div id="alert-box"></div>
 </div>
     <div class="row">
-        <div class="col-xs-12 col-md-4">
+        <div class="col-xs-12 col-md-4 island-style">
             <div class="">
                 <?= $this->Form->create($phone, ['horizontal' => false, 'id' => 'edit-phone-form']) ?>
                 <br>
                 <fieldset>
 
-                    <legend><?= __('Edit Connected Phone') ?>
-                        <?= $this->Form->postLink(
-                        __('Delete'),
-                        ['action' => 'delete', $phone->id],
-                        [
-                        'class' => 'btn btn-danger btn-md',
-                        'confirm' => __('Are you sure you want to delete # {0}?', $phone->id)
-                        ]);?></legend>
-                    <br>
+                    <h3>
+                        <?= __('Edit Connected Phone') ?> <br>
+                        <?= $this->Html->link("<span class='far fa-eye fa-sm'></span>",
+                            ['action' => 'view', $phone->id],
+                            [
+                            'class' => 'btn btn-default btn-sm',
+                            'escapeTitle' => false
+                            ])
+                        ?>
+                        <?= $this->Html->link("<span class='fas fa-tag fa-sm'></span>",
+                            ['action' => 'pdfLabel', $phone->id],
+                            [
+                            'class' => 'btn btn-default btn-sm',
+                            'escapeTitle' => false,
+                            'target' => 'blank'
+                            ])
+                        ?>
+                        <?= $this->Form->postLink("<span class='far fa-trash-alt fa-sm'></span>",
+                            ['action' => 'delete', $phone->id],
+                            [
+                            'class' => 'btn btn-danger btn-sm',
+                            'confirm' => __('Are you sure you want to delete # {0}?', $phone->id),
+                            'escapeTitle' => false
+                            ])
+                        ?>
+                    </h3>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <?= $this->Form->input('grade', [
+                                'options' => $values['grade'],
+                                'empty' => true,
+                                'type' => 'select',
+                                'class' => 'selectpicker',
+                                'data-live-search' => "true",
+                                'data-show-subtext'=>"true",
+                                'data-live-search-style' => 'startsWith'
+                                ])
+                            ?>
+                        </div>
+                        <div class="col-md-6">
+                            <?= $this->Form->control('status') ?>
+                        </div>
+                    </div>
                     <?php
-
-                    echo $this->Form->input('grade', [
-                            'options' => $values['grade'],
-                            'empty' => true,
-                            'type' => 'select',
-                            'class' => 'selectpicker',
-                            'data-live-search' => "true",
-                            'data-show-subtext'=>"true",
-                            'data-live-search-style' => 'startsWith'
-                        ]);
-                    echo $this->Form->control('status');
 
                     echo $this->Form->input(
                             'sim_lock_status',
@@ -43,6 +67,18 @@
                         'options' => $values['sim_lock_status'],
                         'type'=> 'radio',
                         'inline' => 'true'
+                    ]);
+                    echo $this->Form->control(
+                    'icloud_status',
+                    [
+                    'label' => 'iCloud Locked',
+                    'type'=> 'checkbox'
+                    ]);
+                    echo $this->Form->control(
+                    'touch_id_status',
+                    [
+                    'label' => 'Touch ID not working',
+                    'type'=> 'checkbox'
                     ]);
                     echo $this->Form->control('comments');
                     echo $this->Form->button(__('Submit'), ['class' => 'btn btn-primary btn-lg']);
@@ -65,10 +101,8 @@
         </div>
         <div class="col-xs-12 col-md-8">
             <div class="alert alert-success" id="edit-phone-form-alert" role="alert">Nothing to submit</div>
-            <?php
-                echo $this->Panel->create($phone->label);
-
-            ?>
+            <?= $this->Panel->create() ?>
+            <?= $this->Panel->header('<h4>'.$phone->label.'</h4>', ['escape' => false]) ?>
             <div class="table-responsive">
             <table class="table ">
                 <tr>
@@ -119,6 +153,26 @@
                     <?= $this->Number->format($phone->battery_cycles) ?></td>
                 </tr>
                 <tr>
+                    <th scope="row"><?= __('Supplier') ?></th>
+                    <td>
+                        <?php if (!empty($phone->supplier_order)): ?>
+                        <?= h($phone->supplier_order->supplier->name) ?>
+                        <?= h('('.$phone->supplier_order->supplier->description.')') ?>
+                        <p><b>Invoice</b>: <?= $phone->supplier_order->invoice_number ?>
+                            <?= $phone->supplier_order->invoice_date ?></p>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><?= __('Sold to') ?></th>
+                    <td>
+                        <?php foreach($phone->customers as $customer): ?>
+                        <?= $this->Html->link($customer->name, ['controller' => 'transactions', 'action' => 'view', $customer->_joinData->id], ['target' => '_blank'])  ?>
+                        - <?= h($customer->_joinData->date) ?> <br>
+                        <?php endforeach; ?>
+                    </td>
+                </tr>
+                <tr>
                     <th scope="row"><?= __('Created') ?></th>
                     <td><?= h($this->Time->i18nFormat($phone->created)) ?></td>
                 </tr>
@@ -144,6 +198,8 @@
         </div>
     </div>
 </div>
+        </div>
+    </div>
 <script>
     unsavedForm = function(event) {
         form.data("changed", true);

@@ -7,10 +7,10 @@
             "action" => "returnsTable",
             $phone->id]),
     ]); ?>
-<?= $this->Panel->header(['style' => 'display: flex; justify-content: space-between;']); ?>
+<div class="panel-heading" style='display: flex; justify-content: space-between;' data-toggle="collapse">
 <h4 ><?= __('Related Returns') ?></h4>
-<?= $this->Html->link(__('Add Return'), ['controller' => 'Phones', 'action' => 'addReturnModal', $phone->id],
-['class' => 'btn btn-default modal-ajax-button']) ?>
+<?= $this->Html->link("<span class='fas fa-plus'></span>", ['controller' => 'Phones', 'action' => 'addReturnModal', $phone->id],
+['class' => 'btn btn-default modal-ajax-button', 'escapeTitle' => false]) ?>
 </div> <!-- close header-->
 <?php if (!empty($phone->item_returns)): ?>
 <div class="table-responsive">
@@ -19,7 +19,6 @@
         <th scope="col"><?= __('Reason') ?></th>
         <th scope="col"><?= __('Status') ?></th>
         <th scope="col"><?= __('Refund') ?></th>
-        <th scope="col"><?= __('Comments') ?></th>
         <th scope="col"><?= __('Created') ?></th>
         <th scope="col"><?= __('Modified') ?></th>
         <th scope="col" class="actions"><?= __('Actions') ?></th>
@@ -30,18 +29,21 @@
         <td><?= h($return->reason) ?></td>
         <td><?= h($return->status) ?></td>
         <td><?= h($return->refund) ?></td>
-        <td><?= h($return->comments) ?></td>
         <td><?= h($this->Time->i18nFormat($return->created)) ?></td>
         <td><?= h($this->Time->i18nFormat($return->modified)) ?></td>
 
 
         <td class="actions">
-            <?= $this->Html->link(__('View'), ['controller' => 'ItemReturns', 'action' => 'view', $return->id],
-            ['class' => 'btn btn-default']) ?>
-            <?= $this->Html->link(__('Edit'), ['controller' => 'Phones', 'action' => 'editReturnModal', $return->id],
-            ['class' => 'modal-ajax-button btn btn-default']) ?>
-            <?= $this->Html->link(__('Delete'), ['controller' => 'ItemReturns', 'action' => 'delete', $return->id], ['class' => 'btn btn-danger delete-ajax-button']) ?>
+            <?= $this->Html->link("<span class='far fa-eye'></span>", ['controller' => 'ItemReturns', 'action' => 'view', $return->id],
+            ['class' => 'btn btn-default', 'escapeTitle' => false]) ?>
+            <?= $this->Html->link("<span class='far fa-edit'></span>", ['controller' => 'Phones', 'action' => 'editReturnModal', $return->id],
+            ['class' => 'modal-ajax-button btn btn-warning', 'escapeTitle' => false]) ?>
+            <?= $this->Html->link("<span class='far fa-trash-alt'></span>", ['controller' => 'ItemReturns', 'action' => 'delete', $return->id],
+            ['class' => 'btn btn-danger delete-ajax-button', 'escapeTitle' => false]) ?>
         </td>
+    </tr>
+    <tr>
+        <td colspan="4" class="ajax-comments-table-cell"><b><?= __('Comments') ?></b>: <?= h($return->comments) ?></td>
     </tr>
     <?php endforeach; ?>
 </table>

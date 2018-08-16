@@ -38,6 +38,7 @@ class UsersController extends AppController
 
     public function login()
     {
+
         if ($this->request->is('post')) {
             $user = $this->Auth->identify();
             if ($user) {
@@ -75,9 +76,9 @@ class UsersController extends AppController
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
             if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
+                $this->Flash->success(__('You are now registered. Please login now.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['controller' => 'users', 'action' => 'login']);
             }
             $this->Flash->error(__('The user could not be saved. Please, try again.'));
         }

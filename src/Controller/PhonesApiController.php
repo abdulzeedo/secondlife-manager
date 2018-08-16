@@ -67,24 +67,30 @@ class PhonesApiController extends AppController
 
     }
 
-    public function stream() {
+    public function stream($id = null) {
 
         $this->viewBuilder()->setLayout(false);
 
         $this->loadModel('ConnectedPhones');
         $this->loadModel('Phones');
 
-        $connected = $this->ConnectedPhones->findByStatus('connected')
-            ->contain(['Phones'])->all();
-
+        $connected = $this->ConnectedPhones->find('all')
+            ->where(['ConnectedPhones.status' => 'connected'])
+            ->contain(['Phones', "Users"]);
         // Get as few disconnected records as possible to limit the load
         $disconnected = $this->ConnectedPhones->find('all', [
             'conditions' => [
-                'ConnectedPhones.modified >' => new DateTime('-1 minutes'),
+                'ConnectedPhones.modified >' => new DateTime('-1 days'),
                 'ConnectedPhones.status' => 'disconnected'
             ],
-            'contain' => ['Phones']
+            'contain' => ['Phones', "Users"]
         ]);
+
+        if ($id != null) {
+            $connected->where(['ConnectedPhones.user_id' => $id]);
+            $disconnected->where(['ConnectedPhones.user_id' => $id]);
+        }
+
 
         $result = [
             'connected' => $connected,

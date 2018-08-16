@@ -1,0 +1,6 @@
+/tmp
+/logs
+!webroot/.htaccess
+/vendor
+config/app.php
+/.idea

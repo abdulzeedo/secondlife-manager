@@ -174,7 +174,6 @@ ServerRequest::addDetector('tablet', function ($request) {
 
     return $detector->isTablet();
 });
-Plugin::load('FrontendBridge', ['bootstrap' => true, 'routes' => true, 'autoload' => true]);
 Plugin::load('Bootstrap');
 Plugin::load('CsvView', ['routes' => true]);
 
@@ -226,3 +225,7 @@ if (Configure::read('debug')) {
 
 Plugin::load('Search');
 
+
+Plugin::load('Migrations');
+
+Plugin::load('CakePdf', ['bootstrap' => true]);

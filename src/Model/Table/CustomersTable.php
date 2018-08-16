@@ -4,6 +4,7 @@ namespace App\Model\Table;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -77,6 +78,44 @@ class CustomersTable extends Table
             ->maxLength('location', 255)
             ->allowEmpty('location');
 
+
         return $validator;
+    }
+    public function buildRules(RulesChecker $rules)
+    {
+        $returns = TableRegistry::get('ItemReturns');
+        $transactions = TableRegistry::get('Transactions');
+        $ids = [];
+        $rules->add(function($entity, $options) use ($returns, $transactions) {
+            /** @var \App\Model\Entity\Phone $phone */
+            $flag = false;
+            foreach($entity->phones as $phone) {
+                // Get returns count for the current item
+                $returnsCount = $returns->find('all')
+                    ->where(['item_id' => $phone->id])->count();
+                // Get transactions count for the current item
+                $transactionsCount = $transactions->find('all')
+                    ->where(['item_id' => $phone->id])->count();
+                if (!($transactionsCount <= $returnsCount)) {
+                    $flag = true;
+                    $error = [
+                        "id" => $phone->id,
+                        "message" => "The phone has already been set as sold. Add a return or edit it from its view/edit page. Or simply delete it."
+                    ];
+                    $phone->setError('phone',
+                          $error);
+                }
+            }
+            if ($flag)
+                return false;
+            return true;
+
+        }, 'id',
+            [
+                'errorField' => 'phones',
+                'message' => 'This item has already been sold and no returns have been added.'
+                    .'Add a return first to set it as sold again.'
+            ]);
+        return $rules;
     }
 }

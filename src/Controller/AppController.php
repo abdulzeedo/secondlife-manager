@@ -15,13 +15,13 @@
 namespace App\Controller;
 
 use Cake\Controller\Controller;
-use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\I18n\Date;
 use Cake\I18n\FrozenDate;
 use Cake\I18n\FrozenTime;
 use Cake\I18n\Time;
-use \FrontendBridge\Lib\FrontendBridgeTrait;
+
+
 /**
  * Application Controller
  *
@@ -34,8 +34,6 @@ class AppController extends Controller
 {
 
     public $helpers = [
-        'CkTools.CkTools',
-        'FrontendBridge' => ['className' => 'FrontendBridge.FrontendBridge'],
         'Form' => [
             'className' => 'Bootstrap.Form'
         ],
@@ -45,6 +43,9 @@ class AppController extends Controller
 
         'Modal' => [
             'className' => 'Bootstrap.Modal'
+        ],
+        'Flash' => [
+            'className' => 'Bootstrap.Flash'
         ],
         'Navbar' => [
             'className' => 'Bootstrap.Navbar'
@@ -68,7 +69,7 @@ class AppController extends Controller
 
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
-        $this->loadComponent('FrontendBridge.FrontendBridge');
+
         Time::setDefaultLocale('it-IT'); // For any mutable DateTime
         FrozenTime::setDefaultLocale('it-IT'); // For any immutable DateTime
         Date::setDefaultLocale('it-IT'); // For any mutable Date
@@ -99,9 +100,9 @@ class AppController extends Controller
                 'action' => 'login'
             ],
             // If unauthorized, return them to page they were just on
-            'unauthorizedRedirect' => $this->referer(),
-            'loginRedirect' => $this->referer(),
-            'logoutRedirect' => $this->referer()
+            'unauthorizedRedirect' => '/login',
+            'loginRedirect' => '/phones',
+            'logoutRedirect' => '/login'
         ]);
 
 
@@ -114,7 +115,7 @@ class AppController extends Controller
 
     public function beforeRender(Event $event) {
         if ($this->Auth)
-            $this->set('user', $this->Auth->user());
+            $this->set('userLoggedIn', $this->Auth->user());
 
 //        Configure::write('TimeZone', 'Europe/Rome');
 
@@ -125,4 +126,5 @@ class AppController extends Controller
         // By default deny access.
         return true;
     }
+    // Used to download software for diagnosis
 }

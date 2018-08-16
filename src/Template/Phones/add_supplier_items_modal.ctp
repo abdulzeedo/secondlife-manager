@@ -40,11 +40,6 @@
                 <?= $this->Form->control('phones_list', ['type' => 'textarea'])?>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <a id="phones-add" class="btn btn-primary">Add Phones</a>
-            </div>
-        </div>
         <div class="modal-footer">
 
             <?= $this->Form->button(__('Submit')) ?>

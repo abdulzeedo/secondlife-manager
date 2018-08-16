@@ -36,7 +36,7 @@
         padding: 0 !important;
     }
 </style>
-<div class="row">
+<div class="row island-style">
 <div class="col-md-12">
     <h3><?= __('Phones') ?></h3>
 
@@ -48,18 +48,26 @@
     echo '<div class="row">';
     echo '<div class="col-md-6">';
     echo $this->Form->control('storage_id', ['options' => $storages, 'empty' => true]);
-    echo $this->Form->control('colour_id', ['multiple' => 'multiple', 'options' => $colours, 'empty' => true]);
+    echo $this->Form->control('colour_id', ['type' => 'select', 'multiple' => 'checkbox', 'options' => $colours, 'empty' => true]);
     echo $this->Form->control('model_id', ['options' => $models, 'empty' => true]);
         echo '</div><div class="col-md-6">';
     echo $this->Form->control('user_id', ['options' => $users, 'empty' => true]);
     echo $this->Form->control('grade');
-        echo '</div><div class="col-md-12">';
-
-    echo $this->Form->control('supplier_id', ['multiple' => 'multiple', 'options' => $suppliers, 'empty' => true]);
+    echo $this->Form->control('icloud_status', ['type' => 'checkbox', 'label' => 'iCloud Locked',
+        'templates' => ['nestingLabel' => '<input type="hidden" name="{{name}} value"><label {{attrs}}>{{input}}{{text}}</label>']]);
+    echo $this->Form->control('touch_id_status', ['type' => 'checkbox', 'label' => 'Touch ID',
+        'templates' => ['nestingLabel' => '<input type="hidden" name="{{name}} value"><label {{attrs}}>{{input}}{{text}}</label>']]);
+    echo $this->Form->control('is_phone_available', ['type' => 'checkbox', 'label' => 'Available Phones only',
+        'templates' => ['nestingLabel' => '<input type="hidden" name="{{name}} value"><label {{attrs}}>{{input}}{{text}}</label>']]);
+        echo '</div></div><div class="row"><div class="col-md-6" id="filter-supplier-id">';
+    echo $this->Form->control('supplier_id', ['type' => 'select', 'multiple' => 'checkbox', 'options' => $suppliers, 'empty' => true]);
+        echo '</div><div class="col-md-6" id="filter-supplier-orders"></div>'
+             .'<div class="col-md-6">';
+    echo $this->Form->control('customer_id', ['type' => 'select', 'multiple' => 'checkbox', 'options' => $customers, 'empty' => true]);
+    echo '</div></div><div class="row"><div class="col-md-6">';
+    echo $this->Form->control('Repairs.status', ['type' => 'select', 'multiple' => 'checkbox', 'options' => $repairs, 'empty' => true, 'label' => 'Repairs status']);
         echo '</div><div class="col-md-6">';
-    echo $this->Form->control('Repairs.status', ['multiple' => 'multiple', 'options' => $repairs, 'empty' => true, 'label' => 'Repairs status']);
-        echo '</div><div class="col-md-6">';
-    echo $this->Form->control('Repairs.reason', ['multiple' => 'multiple', 'options' => $repairsReason, 'empty' => true, 'label' => 'Repair reason']);
+    echo $this->Form->control('Repairs.reason', ['type' => 'select', 'multiple' => 'checkbox', 'options' => $repairsReason, 'empty' => true, 'label' => 'Repair reason']);
     echo '</div></div>'; // Closing tag for row
     echo $this->Panel->endGroup();
     // Match the search param in your table configuration
@@ -72,7 +80,7 @@
 </div>
 </div>
 <br>
-    <div class="row">
+    <div class="row island-style">
         <div class="col-md-12 text-right">
         <div class="bulk-action">
             <?= $this->Html->link(__('Set as sold'), ['controller' => 'Phones', 'action' => 'addTransactionsModal'],
@@ -85,7 +93,7 @@
         </div>
     </div>
 <br>
-<div class="row">
+<div class="row island-style">
     <div class="col-md-12">
     <div class="table-responsive">
     <table cellpadding="0" cellspacing="0" class="table" id="main-table">
@@ -101,9 +109,8 @@
                 <!--<th scope="col"><?= __('modified') ?></th>-->
                 <th scope="col"><?= __('Model') ?></th>
                 <th scope="col"><?= __('Colour') ?></th>
-                <th scope="col"><?= __('Battery Health') ?></th>
-                <th scope="col"><?= __('Sim Lock Status') ?></th>
-                <th scope="col"><?= __('Battery Cycles') ?></th>
+                <th scope="col"><?= __('Battery Health (Cycles)') ?></th>
+                <th scope="col"><?= __('Miscellaneous') ?></th>
                 <!--<th scope="col"><?= __('Os Version') ?></th>-->
                 <!--<th scope="col"><?= __('region_code') ?></th>-->
                 <!--<th scope="col"><?= __('Model Number') ?></th>-->
@@ -123,9 +130,46 @@
                 <!--<td><?= h($this->Time->i18nFormat($phone->modified)) ?></td>-->
                 <td><?= $phone->has('model') ? $this->Html->link($phone->model->name, ['controller' => 'Models', 'action' => 'view', $phone->model->id]) : '' ?></td>
                 <td><?= $phone->has('colour') ? $this->Html->link($phone->colour->colour_name, ['controller' => 'Colours', 'action' => 'view', $phone->colour->id]) : '' ?></td>
-                <td><?= $this->Number->format($phone->battery_health) ?></td>
-                <td><?= h($phone->sim_lock_status) ?></td>
-                <td><?= $this->Number->format($phone->battery_cycles) ?></td>
+                <td><?= $this->Number->format($phone->battery_health) ?>
+                     (<?= $this->Number->format($phone->battery_cycles) ?>)    </td>
+                <td>
+                    <span class="fas fa-cloud
+                                <?= ($phone->icloud_status === '0' ? 'green-status-icon' : 'red-status-icon') ?>"
+                          data-toggle="tooltip"
+                          data-placement="bottom" title="iCloud <?= $phone->icloud_status_label ?>"></span>
+                    <span class="fas fas fa-signal
+                                 <?= ($phone->sim_lock_status === 'unlocked' ? 'green-status-icon'
+                                 : ($phone->sim_lock_status === 'locked' ? 'red-status-icon'
+                                 : 'unknown-status-icon')) ?>"
+                          data-toggle="tooltip"
+                          data-placement="bottom" title="Sim <?= $phone->sim_lock_status ?>"></span>
+                    <span class="fas fa-fingerprint
+                                <?= ($phone->touch_id_status === '0' ? 'green-status-icon' : 'red-status-icon')?>"
+                          data-toggle="tooltip"
+                          data-placement="bottom" title="Touch ID <?= $phone->touch_id_status_label ?>"></span>
+                    <?php
+                        $returnsCount = $phone->getReturnsCount();
+                        $repairsCount = $phone->getRepairsCount();
+                        $isPhoneAvailable = $phone->is_phone_available;
+                    ?>
+                    <span class="fas fa-dollar-sign
+                                <?= ($isPhoneAvailable ? 'unknown-status-icon' : 'green-status-icon')?>"
+                          data-toggle="tooltip"
+                          data-placement="bottom" title="<?= ($isPhoneAvailable ? 'Available' : 'Not available') ?>"></span>
+
+                    <span class="fas fa-undo-alt
+                            <?= ($returnsCount > 0 ? 'yellow-status-icon' : 'unknown-status-icon')?>"
+                            data-toggle="tooltip"
+                            data-placement="bottom" title="<?= ($returnsCount < 0 ? 'No' : $returnsCount) ?> Returns">
+                        <?= ($returnsCount > 0 ? '<span class="status-icon-badge">'.$returnsCount.'</span>' : '') ?></span>
+                    <span class="fas fa-screwdriver
+                            <?= ($repairsCount > 0 ? 'yellow-status-icon' : 'unknown-status-icon')?>"
+                            data-toggle="tooltip"
+                            data-placement="bottom" title="<?= ($repairsCount < 0 ? 'No' : $repairsCount) ?> Repairs">
+                        <?= ($repairsCount > 0 ? '<span class="status-icon-badge">'.$repairsCount.'</span>' : '') ?></span>
+                    </span>
+
+                </td>
                 <!--<td><?= h($phone->os_version) ?></td>-->
                 <!--<td><?= h($phone->region_code) ?></td>-->
                 <!--<td><?= h($phone->model_number) ?></td>-->
@@ -145,8 +189,11 @@
 <?= $this->element('Common/modal'); ?>
 
 <script>
+    // Initialize the tooltip here.
+    $('[data-toggle="tooltip"]').tooltip();
     var table = $('#main-table').DataTable({
-        select: true
+        select: true,
+        stateSave: true
     });
 
     function getPhoneDetails(input) {

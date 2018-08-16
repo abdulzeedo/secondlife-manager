@@ -49,6 +49,14 @@ class CustomersFixture extends TestFixture
                 'created' => '2018-07-12 12:47:20',
                 'modified' => '2018-07-12 12:47:20'
             ],
+            [
+                'id' => 2,
+                'name' => 'mtf 2',
+                'description' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
+                'location' => 'Lorem ipsum dolor sit amet',
+                'created' => '2018-07-12 12:47:20',
+                'modified' => '2018-07-12 12:47:20'
+            ],
         ];
         parent::init();
     }

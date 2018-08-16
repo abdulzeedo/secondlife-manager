@@ -33,7 +33,6 @@ class Customer extends Entity
         'location' => true,
         'created' => true,
         'modified' => true,
-        'transactions' => true,
         'phones' => true
     ];
 }

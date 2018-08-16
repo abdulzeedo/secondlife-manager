@@ -105,7 +105,9 @@ class UsersTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['email']));
+        $rules->add($rules->isUnique(['email']), 'isUnique', [
+            'message' => "This email is already registered with an account."
+        ]);
 
         return $rules;
     }
