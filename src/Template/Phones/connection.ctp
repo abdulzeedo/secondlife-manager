@@ -130,6 +130,8 @@
                     udid: '',
                     status: '',
                     phone: {},
+                    phone_id: '',
+
 
                 }],
             }],
@@ -137,16 +139,44 @@
         created() {
             this.connectedPhones = [];
             this.disconnectedPhones = [];
+            this.requestPermission();
             this.setupStream();
         },
         methods: {
+            requestPermission() {
+                if (Notification.permission !== "granted")
+                    Notification.requestPermission();
+            },
+            notifyMe() {
+                if (Notification.permission !== "granted")
+                    Notification.requestPermission();
+                else {
+                    var notification = new Notification('New Phone added', {
+                        icon: 'https://cdn4.iconfinder.com/data/icons/simple-device/300/flat-iphone-512.png',
+                        body: "A new phone has been connected!",
+                    });
+
+                    notification.onclick = function () {
+                        let id = this.getCurrentID();
+                        let url = "https://mobile.sellmobilefast.co.uk/phones/connection";
+                        if (parseInt(id))
+                            url += '/' + id;
+                        window.open("url", 'connectionTab');
+                    };
+
+                }
+            },
+            getCurrentID() {
+                var currentPageURL = window.location.pathname;
+                var id = currentPageURL.substring(currentPageURL.lastIndexOf('/') + 1);
+                return id;
+            },
             setupStream() {
                 // Not a real URL, just using for demo purposes
 
                 // Get user id if exists
-                var currentPageURL = window.location.pathname;
-                var id = currentPageURL.substring(currentPageURL.lastIndexOf('/') + 1);
 
+                var id = this.getCurrentID();
                 var streamURL = "/phonesApi/stream";
                 // If it's an int, it's an ID for sure
                 if (parseInt(id)) {
@@ -169,6 +199,7 @@
 
                         // If there exists a table look for the phone row
                         if (userTableIndex !== -1) {
+
                             let result = this.connectedPhones[userTableIndex].phones.findIndex(phone => {
                                 return phone.udid === el.udid
                             });
@@ -176,6 +207,7 @@
                                 Vue.set(this.connectedPhones[userTableIndex].phones, result, el)
                             }
                             else {
+                                this.notifyMe();
                                 this.connectedPhones[userTableIndex].phones.push(el);
                             }
                         }
@@ -187,16 +219,26 @@
                                 user_name: el.user.email,
                                 phones: [el]
                             };
+
+                            this.notifyMe();
                             this.connectedPhones.push(user);
                         }
 
                     });
+
+                    var addDisconnectedPhoneRow = (toAddTo, phone) => {
+                        if (phone.phone) {
+                            toAddTo.push(phone);
+                        }
+                    };
                     // Get the list of disconnected phones here
                     disconnected.forEach((el, i) => {
+                        // Get connected user table index for the phone's user
                         let userConnTableIndex = this.connectedPhones.findIndex(user => {
                             return user.user_id === el.user_id
                         });
 
+                        // Get disconnected user table index for the phone's user
                         var userDisconnTableIndex = this.disconnectedPhones.findIndex(user => {
                             return user.user_id === el.user_id
                         });
@@ -208,39 +250,50 @@
                                 phones: []
                             };
 
+                            // Create table
                             this.disconnectedPhones.push(user);
 
+                            // Get its index
                             userDisconnTableIndex = this.disconnectedPhones.findIndex(user => {
                                 return user.user_id === el.user_id
                             });
                         }
 
-                        // If there exists a table look for the phone row
+                        // If there exists a connected user table look for the phone row
+                        //      if the phone is in the connected user table
+                        //          - Remove it from there and add it in disconnected user table
+
+                        /**
+                         * -1: if there is no phone row in connected user table or if there is no
+                         *      user connected table
+                         * int: (>= 0) if there is a phone row in connected user table
+                        */
+                        var isInUserConnTable = -1;
                         if (userConnTableIndex !== -1) {
-                            let result = this.connectedPhones[userConnTableIndex].phones.findIndex(phone => {
-                                return phone.udid === el.udid
+                            isInUserConnTable = this.connectedPhones[userConnTableIndex].phones.findIndex(phone => {
+                                return phone.id === el.id
                             });
-                            // If the phone is in the connected list
-                            // - Remove it from there
-                            // - Add it in disconnected
-                            if (result !== -1) {
-                                this.connectedPhones[userConnTableIndex].phones.splice(result, 1);
-                                this.disconnectedPhones[userDisconnTableIndex].phones.push(el);
-                            }
+                        }
+                        // If the phone is in the connected list
+                        // - Remove it from there
+                        // - Add it in disconnected
+                        if (isInUserConnTable !== -1) {
+                            this.connectedPhones[userConnTableIndex].phones.splice(isInUserConnTable, 1);
+                            addDisconnectedPhoneRow(this.disconnectedPhones[userDisconnTableIndex].phones, el);
+                            // this.disconnectedPhones[userDisconnTableIndex].phones.push(el);
                         }
                         // If the phone is not in the connected list
                         // but is in the disconnected list, update its status
                         // for every row (so duplicates as well).
-                        else {
-
+                       else {
                             // Add only if same ID is not present
                             let isPresent =
                                 this.disconnectedPhones[userDisconnTableIndex].phones.findIndex(phone => {
-
                                     return phone.id === el.id
                                 });
                             if (isPresent === -1) {
-                                this.disconnectedPhones[userDisconnTableIndex].phones.push(el);
+                                addDisconnectedPhoneRow(this.disconnectedPhones[userDisconnTableIndex].phones, el);
+                                // this.disconnectedPhones[userDisconnTableIndex].phones.push(el);
                             }
 
 
