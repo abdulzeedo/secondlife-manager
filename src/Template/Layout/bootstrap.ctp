@@ -185,8 +185,8 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
         <?= $this->Flash->render() ?>
         <?= $this->fetch('content') ?>
     </div>
-    <?= $this->Html->script('/js/eventListeners.js',
-                            '/js/bootstrap-local.js',)
+    <?= $this->Html->script(['/js/eventListeners.js',
+                            '/js/bootstrap-local.js'])
     ?>
 
 </body>
