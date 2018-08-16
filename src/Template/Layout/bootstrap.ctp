@@ -50,7 +50,6 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     '/js/moment.min.js',
     '/js/palette.js',
     '/js/bootstrap-datetimepicker.min.js',
-    '/js/bootstrap.js',
     '/js/utility-functions.js'
 
     ]); ?>
@@ -186,7 +185,9 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
         <?= $this->Flash->render() ?>
         <?= $this->fetch('content') ?>
     </div>
-    <?= $this->Html->script('/js/eventListeners.js') ?>
+    <?= $this->Html->script('/js/eventListeners.js',
+                            '/js/bootstrap-local.js',)
+    ?>
 
 </body>
 </html>
