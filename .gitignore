@@ -1,6 +1,6 @@
 /tmp
 /logs
-!webroot/.htaccess
+webroot/.htaccess
 /vendor
 config/app.php
 /.idea
