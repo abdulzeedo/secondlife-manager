@@ -102,9 +102,12 @@ trait PhoneModalTrait
                 ->where(['Customers.id' => $this->request->getData('customer_id')])
                 ->contain(['Phones'])
                 ->first();
-            $customer = $customersTable->patchEntity($customer, $this->request->getData(),
+            $customer = $customersTable->newEntity($this->request->getData(),
                 ['associated' => ['Phones._joinData']]);
 
+            $customer->id = $this->request->getData('customer_id');
+
+            $customer->isDirty(true);
             foreach($customer->phones as $phone) {
                 $date = new Time($this->request->getData('date'), 'Europe/Rome');
                 $date = $date->timezone('UTC');
