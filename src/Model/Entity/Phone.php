@@ -88,8 +88,6 @@ class Phone extends Entity
         $model = TableRegistry::get('Models')->findById($this->model_id)->first();
         $storage = TableRegistry::get('Storages')->findById($this->storage_id)->first();
 
-        if (!($model && $storage && $colour && $this->_properties['grade']))
-            return "No information available. Please register it first.";
         return ($model ? $model->name : '') . ' ' . ($storage ? $storage->storage : '') . ' GB '
                . ($colour ? $colour->colour_name : '')
                . ' ' . ($this->_properties['grade'] ? $this->_properties['grade'] : '');

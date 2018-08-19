@@ -142,11 +142,11 @@ class PhonesController extends AppController
 //        $colours = $this->Phones->Colours->find('list', ['limit' => 200]);
         $suppliers = $this->getQueryWithCount($query, 'SupplierOrders.supplier_id', 'Suppliers.name',
             'SupplierOrders.Suppliers', function($entity){return $entity->supplier_order->supplier_id;});
-        debug($suppliers->toArray());
+//        debug($suppliers->toArray());
 //        $suppliers = $this->Phones->SupplierOrders->Suppliers->find('list', ['limit' => '200']);
-        $customers = $this->getQueryWithCount($query, 'Customers.id', 'Customers.name',
-            'Customers', function($entity){return $entity->customers->id;});
-//        $customers = $this->Phones->Customers->find('list');
+//        $customers = $this->getQueryWithCount($query, 'Customers.id', 'Customers.name',
+//            'Customers', function($entity){return $entity->customers->id;});
+        $customers = $this->Phones->Customers->find('list');
         $repairs = $this->Phones->Repairs->getDefaultValues('status');
         $repairs[] = [
             'text' => 'All repairs: any status',
