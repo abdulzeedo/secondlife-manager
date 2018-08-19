@@ -5,6 +5,7 @@ use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Filesystem\File;
 use Cake\I18n\FrozenTime;
+use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 
 
@@ -34,7 +35,7 @@ class PhonesController extends AppController
         $this->loadComponent('Modal');
 
         Configure::write('CakePdf', [
-            'engine' => 'CakePdf.mpdf',
+            'engine' => 'CakePdf.Mpdf',
             'margin' => [
                 'bottom' => 15,
                 'left' => 50,
@@ -83,6 +84,36 @@ class PhonesController extends AppController
         }
     }
 
+    /**
+     * Generate key-value array type of query for all filters based on one main query
+     * @param $query
+     * @param $keyField
+     * @param $valueField
+     * @param $joinTable
+     * @return mixed Query
+     */
+    protected function getQueryWithCount(Query $query, $keyField, $valueField, $joinTable, $getId) {
+        $newQuery = $query->cleanCopy()
+            ->find('list', [
+                'keyField' => function($entity) use($getId) {
+                    return $getId($entity);
+                },
+                'valueField' => 'countedValue'
+            ]);
+
+        return $newQuery->innerJoinWith($joinTable)
+            ->group([$keyField])
+            ->select(['SupplierOrders.supplier_id', 'countedValue' => $newQuery->func()->concat([
+                $valueField => 'literal',
+                ' (',
+                'COUNT('.$keyField.')' => 'literal',
+                ')'
+            ])
+            ])
+            ->enableAutoFields(true);
+
+    }
+
     public function index()
     {
 //        debug($this->request->getQueryParams());
@@ -96,13 +127,26 @@ class PhonesController extends AppController
         $query->contain(
             ['Storages', 'Models', 'Colours', 'Users']
         );
+        $storages = $this->getQueryWithCount($query, 'storage_id', 'Storages.storage',
+                                             'Storages', function($entity){return $entity->get('storage_id');});
 
-        $storages = $this->Phones->Storages->find('list', ['limit' => 200]);
-        $users = $this->Phones->Users->find('list', ['limit' => 200]);
-        $models = $this->Phones->Models->find('list', ['limit' => 200]);
-        $colours = $this->Phones->Colours->find('list', ['limit' => 200]);
-        $suppliers = $this->Phones->SupplierOrders->Suppliers->find('list', ['limit' => '200']);
-        $customers = $this->Phones->Customers->find('list');
+        $users = $this->getQueryWithCount($query, 'user_id', 'Users.email',
+        'Users', function($entity){return $entity->get('user_id');});
+//        $users = $this->Phones->Users->find('list', ['limit' => 200]);
+        $models = $this->getQueryWithCount($query, 'model_id', 'Models.name',
+            'Models', function($entity){return $entity->get('model_id');});
+
+//        $models = $this->Phones->Models->find('list', ['limit' => 200]);
+        $colours = $this->getQueryWithCount($query, 'colour_id', 'Colours.colour_name',
+            'Colours', function($entity){return $entity->get('colour_id');});
+//        $colours = $this->Phones->Colours->find('list', ['limit' => 200]);
+        $suppliers = $this->getQueryWithCount($query, 'SupplierOrders.supplier_id', 'Suppliers.name',
+            'SupplierOrders.Suppliers', function($entity){return $entity->supplier_order->supplier_id;});
+        debug($suppliers->toArray());
+//        $suppliers = $this->Phones->SupplierOrders->Suppliers->find('list', ['limit' => '200']);
+        $customers = $this->getQueryWithCount($query, 'Customers.id', 'Customers.name',
+            'Customers', function($entity){return $entity->customers->id;});
+//        $customers = $this->Phones->Customers->find('list');
         $repairs = $this->Phones->Repairs->getDefaultValues('status');
         $repairs[] = [
             'text' => 'All repairs: any status',
