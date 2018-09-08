@@ -75,12 +75,16 @@ var vm = new Vue({
     created: function() {
         eventHub.$on('add-phone', this.addPhone);
 
-        this.getPhoneRecords();
+        // this.getPhoneRecords();
     },
     beforeDestroy: function() {
         eventHub.$off('add-phone', this.addPhone);
     },
     methods: {
+        removeFocus: function(e) {
+            console.log(e);
+            e.target.blur();
+        },
         imieiChanged: function(imiei) {
             this.newImieiToAdd = '';
             this.imieiToAdd = '';
@@ -134,6 +138,7 @@ var vm = new Vue({
         },
         addPhone: function () {
             var vm = this;
+            console.log('Iphone has been called');
             if (this.imieiToAdd && this.imieiToAdd.value) {
 
                 return this.getPhoneDetails(this.imieiToAdd.value)
@@ -161,6 +166,8 @@ var vm = new Vue({
                                     }
                                     else if (error.response.status == 409) {
                                         console.log(error.response.data.response.error.message)
+                                        console.log(error.response);
+                                        console.log(phone);
                                         vm.$notify({title: 'The Phone is already in the list.', type:'danger'});
                                     }
                                     vm.loadingPhonesDetails = false;
@@ -218,13 +225,14 @@ var vm = new Vue({
 
         },
         deletePhoneAjax: function(phone) {
-            return axios.post('phoneRecords/delete', {
+            return axios.post('/phoneRecords/delete', {
                 id: phone.phoneRecordId,
                 item_id: phone.id,
             }, {responseType: 'json'})
         },
         addPhoneAjax: function(phone) {
-            return axios.post('phoneRecords/add', {
+            console.log(phone);
+            return axios.post('/phoneRecords/add', {
                 user_id: this.user_id,
                 item_id: phone.id,
             }, {responseType: 'json'})
@@ -273,7 +281,10 @@ var vm = new Vue({
         },
         onImieiScanned: function(imiei) {
             var vm = this;
-            axios.get('phoneRecords/imiei-list/' + imiei)
+            var isVisible = $('.modal').is(':visible');
+            if (isVisible)
+                return;
+            axios.get('/phoneRecords/imiei-list/' + imiei)
                 .then((response) => {
                     return response.data.phonesList;
                 })
@@ -295,6 +306,7 @@ var vm = new Vue({
                     } else if(imieiList.length === 1){
                         vm.imieiToAdd = imieiList[0];
                         vm.imieiScanPhoneAddLoading = true;
+                        console.log('calling add Phone from here');
                         vm.addPhone()
                             .then(() => {
                                 vm.imieiScanPhoneAddLoading = false;

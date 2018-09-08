@@ -33,7 +33,7 @@
                     </div>
                     <div class="col-sm-2" v-if="!newImieiToAdd ">
                         <button class="btn btn-primary" v-bind:disabled="imieiToAdd === ''"
-                                @click.prevent="addPhone">Add Phone</button>
+                                 @click.prevent="addPhone(); removeFocus($event)">Add Phone</button>
                     </div>
                 </div>
             </div>
