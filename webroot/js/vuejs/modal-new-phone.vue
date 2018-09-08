@@ -3,7 +3,7 @@
     <button v-if="imiei && currentImiei" class="btn btn-primary"
             @click.prevent="open=true"
     >Add New Phone</button>
-    <modal v-model="open" title="Add new phone from imiei">
+    <modal v-model="open" title="Add new phone from imiei" auto-focus>
         <div class="container">
         <form class="form" @submit.prevent="onSubmit">
             <div class="form-group">
@@ -14,7 +14,9 @@
         </div>
         <div slot="footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" @click.prevent="onSubmit">Add New Phone</button>
+            <button type="button" class="btn btn-primary"
+                    data-action="auto-focus"
+                    @click.prevent="onSubmit">Add New Phone</button>
         </div>
     </modal>
     </div>
