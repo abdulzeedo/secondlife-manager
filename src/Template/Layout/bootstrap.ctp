@@ -111,6 +111,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
                 echo $this->Navbar->link('All phones', ['controller' => 'Phones', 'action' => 'connection']);
             echo $this->Navbar->endMenu();
             echo $this->Navbar->link('All reports', ['controller' => 'Reports', 'action' => 'index']);
+            echo $this->Navbar->link('Stock record', ['controller' => 'PhoneRecords', 'action' => 'index']);
 
             echo $this->Navbar->link('Download Diagnosis', ['controller' => 'Phones', 'action' => 'download']);
         echo $this->Navbar->endMenu();

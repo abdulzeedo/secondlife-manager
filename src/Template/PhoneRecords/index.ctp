@@ -6,7 +6,6 @@
 <div class="row">
 
     <div class="col-sm-12 island-style-v-spaced">
-        <router-link to="/consistency-check/96">Open modal</router-link>
         <form class="form-horizontal">
             <div class="form-group">
                 <div class="row">
