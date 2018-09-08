@@ -74,7 +74,6 @@ var vm = new Vue({
     },
     created: function() {
         eventHub.$on('add-phone', this.addPhone);
-
         this.getPhoneRecords();
     },
     beforeDestroy: function() {
