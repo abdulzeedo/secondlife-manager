@@ -90,9 +90,11 @@ class Phone extends Entity
 
         return ($model ? $model->name : '') . ' ' . ($storage ? $storage->storage : '') . ' GB '
                . ($colour ? $colour->colour_name : '')
-               . ' ' . ($this->_properties['grade'] ? $this->_properties['grade'] : '');
+               . ' ' . (isset($this->_properties['grade']) ? $this->_properties['grade'] : '');
     }
     protected function _getIcloudStatusLabel() {
+        if (!isset($this->_properties['icloud_status']))
+            return '';
         $icloud_status = $this->_properties['icloud_status'];
         if ($icloud_status == '0')
             return "unlocked";
@@ -100,6 +102,8 @@ class Phone extends Entity
             return "locked";
     }
     protected function _getTouchIdStatusLabel() {
+        if (!isset($this->_properties['touch_id_status']))
+            return '';
         $touch_id_status = $this->_properties['touch_id_status'];
         if ($touch_id_status == '0')
             return "working";
@@ -115,6 +119,8 @@ class Phone extends Entity
      * @return bool true if available, false if not available
      */
     protected function _getIsPhoneAvailable() {
+        if (!isset($this->_properties['id']))
+            return '';
         $returnsCount = TableRegistry::get('ItemReturns')->find('all')
             ->where(['item_id' => $this->_properties['id']])->count();
         $transactionsCount = TableRegistry::get('Transactions')->find('all')
@@ -136,6 +142,8 @@ class Phone extends Entity
      * @return int Return the number of item returns.
      */
     public function getReturnsCount() {
+        if (!isset($this->_properties['id']))
+            return '';
         $returnsCount = TableRegistry::get('ItemReturns')->find('all')
             ->where(['item_id' => $this->_properties['id']])->count();
 
@@ -147,6 +155,8 @@ class Phone extends Entity
      * @return int Return the number of repairs.
      */
     public function getRepairsCount() {
+        if (!isset($this->_properties['id']))
+            return '';
         $repairsCount = TableRegistry::get('Repairs')->find('all')
             ->where(['item_id' => $this->_properties['id']])->count();
 

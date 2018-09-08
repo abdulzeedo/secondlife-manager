@@ -69,6 +69,10 @@ class PhonesTable extends Table
             'foreignKey' => 'item_id'
         ]);
 
+        $this->hasMany('PhoneRecords', [
+            'foreignKey' => 'item_id'
+        ]);
+
         // Add the behaviour to your table
         $this->addBehavior('Search.Search');
 

@@ -75,47 +75,10 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
         /* ************************************** */
         /* ********** Loader css end ******** */
         /* ************************************** */
-        span.fas {
-            margin: 5px;
-        }
-        span.status-icon-badge {
-            color: white;
-            position: relative;
-            text-align: center;
-            top: 3px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            left: -3px;
-            background: #8a8a8a;
-            border-radius: 28px;
-            padding: 1px 5px;
-            font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-        }
-        .red-status-icon {
-            color: red;
-        }
-        .yellow-status-icon {
-            color: #ff9b16;
-        }
-        .green-status-icon {
-            color: #14d62f;
-        }
-        .unknown-status-icon {
-            color: lightgrey;
-        }
-        .button-has-error {
-            border: 1px solid red;
-        }
-        .button-has-success {
-            border: 1px solid green;
-        }
-        .navbar-text, .navbar-link{
-            color: white!important;
-        }
     </style>
     <script>$(window).load(function() {
         // Animate loader off screen
-        $(".se-pre-con").fadeOut("slow");;
+        $(".se-pre-con").fadeOut("slow");
     });</script>
 </head>
 <body>

@@ -47,6 +47,9 @@ class UsersTable extends Table
         $this->hasMany('ConnectedPhones', [
             'foreignKey' => 'user_id'
         ]);
+        $this->hasMany('PhoneRecords', [
+            'foreignKey' => 'user_id'
+        ]);
 
         $this->addBehavior('Timestamp');
     }

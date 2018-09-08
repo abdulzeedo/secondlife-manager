@@ -59,6 +59,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/logout', ['controller' => 'Users', 'action' => 'logout']);
     $routes->connect('/register', ['controller' => 'Users', 'action' => 'add']);
 
+
     /**
      * Phone controller routes
      */
@@ -71,6 +72,10 @@ Router::scope('/', function (RouteBuilder $routes) {
 
     $routes->connect('/ebaylogin/*', ['controller' => 'Ebaylogin', 'action' => 'index']);
 
+    /**
+     * Phone record match all vue app routes
+     */
+    $routes->connect('/phoneRecords/consistency-check/*', ['controller' => 'PhoneRecords', 'action' => 'index']);
     /**
      * Connect catchall routes for all controllers.
      *

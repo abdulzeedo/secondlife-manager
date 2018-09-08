@@ -94,7 +94,7 @@
                     // Don't remove the first option (which is empty option)
                     $('#phone-id option:gt(0)').remove()
                     // Loop through
-                    $.each(elements, function(i, element) {
+                    $.each(elements.phonesList, function(i, element) {
                         $('#phone-id').append($('<option>', {
                             value: element.value,
                             text: element.text,
@@ -102,8 +102,8 @@
                         }));
                     });
                 },
-                    function(){console.log('error')})
-                .then(function(){console.log('loaded')})
+                    function(){console.log('error list not loaded')})
+                .then(function(){console.log('Imiei list loaded')})
                 .then(function() {
                     $('#phone-id').selectpicker('refresh');
                 });

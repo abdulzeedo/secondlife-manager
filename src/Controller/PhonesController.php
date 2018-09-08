@@ -5,6 +5,7 @@ use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Filesystem\File;
 use Cake\I18n\FrozenTime;
+
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 
@@ -13,7 +14,7 @@ use Cake\ORM\TableRegistry;
  * Phones Controller
  *
  * @property \App\Model\Table\PhonesTable $Phones
- * * @property \App\Model\Table\RepairsTable $Repairs
+ * @property \App\Model\Table\RepairsTable $Repairs
  *
  * @method \App\Model\Entity\Phone[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
@@ -21,6 +22,7 @@ class PhonesController extends AppController
 {
     use Phones\PhoneModalTrait;
     use Phones\AdditionalOptionsTrait;
+    use Phones\PhoneAjaxTrait;
 
     public function initialize()
     {
@@ -46,20 +48,6 @@ class PhonesController extends AppController
         ]);
 
     }
-
-    public function imieiList($imiei = '') {
-        $this->autoRender = false;
-        $phones = $this->Phones->find('all', [
-            'conditions' => ['imiei LIKE' => '%'.$imiei.'%']
-        ])->toArray();
-
-        $phonesList = [];
-        foreach($phones as $phone) {
-
-            $phonesList[] = ['value' => $phone->id, 'text' => $phone->imiei, 'data-subtext' => $phone->label];
-        }
-        $this->response = $this->response->withStringBody(json_encode($phonesList));
-    }
     /**
      * Index method
      *
@@ -67,22 +55,7 @@ class PhonesController extends AppController
      */
 
 
-    public function getPhoneDetails($id = null) {
 
-        if ($id != null && $this->request->is(['ajax', 'post', 'get'])) {
-            $phone = $this->Phones->find('all')
-                ->where(['Phones.id' => $id])
-                ->contain(['Repairs', 'SupplierOrders.Suppliers', 'ItemReturns', 'Transactions.Customers']);
-
-            FrozenTime::setJsonEncodeFormat('dd-MM-yyyy HH:mm:ss');
-            FrozenTime::setDefaultLocale('it-IT');
-            $this->viewBuilder()->setClassName('Json');
-            $phone = $phone->first();
-
-            $this->set(compact(['phone']));
-            $this->set('_serialize', ['phone']);
-        }
-    }
 
     /**
      * Generate key-value array type of query for all filters based on one main query
