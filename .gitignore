@@ -1,6 +1,8 @@
 /tmp
 /logs
+/node_modules
 webroot/.htaccess
+webroot/node_modules
 /vendor
 config/app.php
 /.idea
