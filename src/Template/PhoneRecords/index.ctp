@@ -63,4 +63,4 @@
     <barcode-scanner @imiei-scanned="onImieiScanned"></barcode-scanner>
 </div>
 
-<?= $this->Html->script('/dist/main.js') ?>
+<?= $this->Html->script('/dist/main.js?'.rand()) ?>
