@@ -75,6 +75,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     /**
      * Phone record match all vue app routes
      */
+    $routes->connect('/phoneRecords', ['controller' => 'PhoneRecords', 'action' => 'index']);
     $routes->connect('/phoneRecords/consistency-check/*', ['controller' => 'PhoneRecords', 'action' => 'index']);
     /**
      * Connect catchall routes for all controllers.
