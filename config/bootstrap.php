@@ -229,3 +229,5 @@ Plugin::load('Search');
 Plugin::load('Migrations');
 
 Plugin::load('CakePdf', ['bootstrap' => true]);
+
+Plugin::load('AuditStash');

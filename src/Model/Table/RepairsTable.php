@@ -44,6 +44,7 @@ class RepairsTable extends Table
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
+        $this->addBehavior('AuditStash.AuditLog');
     }
 
     /**

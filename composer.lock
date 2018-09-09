@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e48c0688a83584211a40e0b2d509baf4",
+    "content-hash": "5e05ee266d812ea2ff070bc415b3e6f8",
     "packages": [
         {
             "name": "aura/intl",
@@ -789,6 +789,48 @@
                 "php"
             ],
             "time": "2017-01-03T01:04:05+00:00"
+        },
+        {
+            "name": "lorenzo/audit-stash",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lorenzo/audit-stash.git",
+                "reference": "5dbc324bd06d31e89270db01153e9ce3ff170241"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lorenzo/audit-stash/zipball/5dbc324bd06d31e89270db01153e9ce3ff170241",
+                "reference": "5dbc324bd06d31e89270db01153e9ce3ff170241",
+                "shasum": ""
+            },
+            "require": {
+                "cakephp/orm": "^3.0",
+                "php": ">=7.0.0"
+            },
+            "require-dev": {
+                "cakephp/cakephp": "^3.6",
+                "cakephp/elastic-search": "^2.0-dev",
+                "friendsofcake/process-mq": "dev-master",
+                "phpunit/phpunit": "^6.0"
+            },
+            "suggest": {
+                "cakephp/elastic-search": "The default persister engine for audit-stash is elastic search and requires this plugin",
+                "friendsofcake/crud": "audit-stash provide Crud Action classes for displaying audit logs",
+                "friendsofcake/process-mq": "Use this package if you prefer sending the audit events to RabbitMQ"
+            },
+            "type": "cakephp-plugin",
+            "autoload": {
+                "psr-4": {
+                    "AuditStash\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Flexible and rock solid audit log tracking plugin for cakephp",
+            "time": "2018-06-28T21:48:10+00:00"
         },
         {
             "name": "m1/env",

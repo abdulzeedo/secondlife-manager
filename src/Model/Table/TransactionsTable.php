@@ -48,8 +48,7 @@ class TransactionsTable extends Table
         $this->belongsTo('Phones', [
             'foreignKey' => 'item_id'
         ]);
-
-
+        $this->addBehavior('AuditStash.AuditLog');
     }
 
     /**

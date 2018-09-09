@@ -15,6 +15,7 @@
 		"friendsofcake/search": "^4.4",
 		"holt59/cakephp3-bootstrap-helpers": "dev-master",
 		"josegonzalez/dotenv": "2.*",
+		"lorenzo/audit-stash": "^2.0",
 		"mobiledetect/mobiledetectlib": "2.*",
 		"mpdf/mpdf": "^7.1",
 		"scherersoftware/cake-api-baselayer": "^1.0"

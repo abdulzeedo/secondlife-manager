@@ -46,16 +46,7 @@ class PhonesController extends AppController
             ],
             'orientation' => 'landscape'
         ]);
-
     }
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
-
-
-
 
     /**
      * Generate key-value array type of query for all filters based on one main query

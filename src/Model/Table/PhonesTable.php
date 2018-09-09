@@ -91,6 +91,9 @@ class PhonesTable extends Table
         $this->belongsTo('SupplierOrders', [
             'foreignKey' => 'supplier_order_id'
         ]);
+        $this->addBehavior('AuditStash.AuditLog', [
+            'whitelist' => ['item_returns.comments']
+        ]);
 
         // Setup search filter using search manager
         $this->searchManager()

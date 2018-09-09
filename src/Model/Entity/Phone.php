@@ -1,7 +1,10 @@
 <?php
 namespace App\Model\Entity;
 
+use Cake\Collection\Collection;
+use Cake\Error\Debugger;
 use Cake\ORM\Entity;
+use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 /**
  * Phone Entity
@@ -39,7 +42,8 @@ use Cake\ORM\TableRegistry;
 class Phone extends Entity
 {
 
-    protected $_virtual = ['label', 'touch_id_status_label', 'icloud_status_label', 'is_phone_available'];
+    protected $_virtual = ['label', 'touch_id_status_label', 'icloud_status_label', 'is_phone_available',
+                            'audit_trail'];
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -95,7 +99,9 @@ class Phone extends Entity
     protected function _getIcloudStatusLabel() {
         if (!isset($this->_properties['icloud_status']))
             return '';
-        $icloud_status = $this->_properties['icloud_status'];
+        return $this->getIcloudStatusLabel($this->_properties['icloud_status']);
+    }
+    protected function getIcloudStatusLabel($icloud_status) {
         if ($icloud_status == '0')
             return "unlocked";
         else
@@ -104,7 +110,10 @@ class Phone extends Entity
     protected function _getTouchIdStatusLabel() {
         if (!isset($this->_properties['touch_id_status']))
             return '';
-        $touch_id_status = $this->_properties['touch_id_status'];
+        return $this->getTouchIdStatusLabel($this->_properties['touch_id_status']);
+    }
+
+    protected function getTouchIdStatusLabel($touch_id_status) {
         if ($touch_id_status == '0')
             return "working";
         else
@@ -161,5 +170,136 @@ class Phone extends Entity
             ->where(['item_id' => $this->_properties['id']])->count();
 
         return $repairsCount;
+    }
+
+    /**
+     * Generate a verbose for all the audit trails of this phone entity
+     *
+     * @return array|string An array of verbalised audit trails of the phone entity
+     */
+    protected function _getAuditTrail() {
+        if (!isset($this->_properties['id']))
+            return '';
+        $AuditLog = TableRegistry::get('audit_logs');
+        // Get phones audit
+        $phoneLogs = $AuditLog->find('all')
+            ->where(['source' => 'phones'])
+            ->andWhere(['primary_key' => $this->_properties['id']]);
+        $verbalizedLogs = new Collection([]);
+        $verbalizedLogs = $verbalizedLogs->append($this->verbalisePhoneAuditTrails($phoneLogs->all()));
+
+        $returns = TableRegistry::get('ItemReturns')->find('all')
+            ->where(['item_id' => $this->_properties['id']])
+            ->select('id')->extract('id');
+        // Get returns audit
+        if (!$returns->isEmpty()) {
+            $returnsLogs = $AuditLog->find('all')
+                ->where(['source' => 'item_returns'])
+                ->andWhere(['primary_key IN' => $returns->toList()]);
+            $verbalizedLogs = $verbalizedLogs->append($this->verbalisePhoneAuditTrails($returnsLogs->all()));
+        }
+        $repairs = TableRegistry::get('Repairs')->find('all')
+            ->where(['item_id' => $this->_properties['id']])->extract('id');
+        // Get repairs audits
+        if (!$repairs->isEmpty()) {
+            $repairLogs = $AuditLog->find('all')
+                ->where(['source' => 'repairs'])
+                ->andWhere(['primary_key IN' => $repairs->toList()]);
+            $verbalizedLogs = $verbalizedLogs->append($this->verbalisePhoneAuditTrails($repairLogs->all()));
+        }
+
+        $transactions = TableRegistry::get('Transactions')->find('all')
+            ->where(['item_id' => $this->_properties['id']])->extract('id');
+        // Get transaction audits
+        if (!$transactions->isEmpty()) {
+            $transactionLogs = $AuditLog->find('all')
+                ->where(['source' => 'transactions'])
+                ->andWhere(['primary_key IN' => $transactions->toList()]);
+            $verbalizedLogs = $verbalizedLogs->append($this->verbalisePhoneAuditTrails($transactionLogs->all()));
+        }
+        $verbalizedLogs = $verbalizedLogs->sortBy('date');
+        return $verbalizedLogs->toList();
+    }
+
+    /**
+     * Verbalise every entry of the audit trail
+     *
+     * @param $phoneLogs
+     * @return array An array of verbalised phone audit trails
+     */
+    protected function verbalisePhoneAuditTrails($phoneLogs) {
+        $User = TableRegistry::get('Users');
+
+        $verbalized = [];
+        foreach ($phoneLogs as $logs) {
+            $entity = str_ireplace('_', ' ', substr($logs->source, 0, -1));
+            $meta = json_decode($logs->meta);
+            $user = $User->get($meta->user);
+            if ($logs->type === 'create') {
+                $verbalized[] = [
+                    'source' => $entity,
+                    'user' => $user->email,
+                    'id' => $logs->id,
+                    'message' => "$user->email has created this new $entity entry.",
+                    'updates' => [],
+                    'type' => 'created',
+                    "date" => $logs->created,
+                ];
+            }
+            else if ($logs->type === 'update') {
+                $original = json_decode($logs->original, true);
+                $changed = json_decode($logs->changed, true);
+                $changesVerbalized = [];
+                foreach ($original as $origProperty => $origValue) {
+                    if (substr($origProperty, -3) == '_id') {
+                        $probableTableName = substr($origProperty, 0, -3). 's';
+                        if(TableRegistry::exists(ucfirst($probableTableName))) {
+                            $Table = TableRegistry::get($probableTableName);
+                            $displayField = $Table->getDisplayField();
+                            $origValue = $Table->get($origValue)->get($displayField);
+                            $changed[$origProperty] = $Table->get($changed[$origProperty])->get($displayField);
+                        }
+                    }
+                    else if ($this->get($origProperty . '_label')) {
+                        $functionName =
+                                    str_ireplace(' ', '',
+                                        ucwords(str_ireplace('_', ' ', $origProperty . '_label')));
+                        $functionName = 'get' . $functionName;
+
+                        $origValue = $this->$functionName($origValue);
+                        $changed[$origProperty] = $this->$functionName($changed[$origProperty]);
+                    }
+                    $changesVerbalized[] = [
+                        'original' => $origValue,
+                        'changed' => $changed[$origProperty],
+                        'property' => substr($origProperty, -3) == '_id'
+                                        ? str_ireplace('_', ' ', substr($origProperty, 0, -3))
+                                        : str_ireplace('_', ' ', $origProperty),
+                    ];
+                }
+                $verbalized[] = [
+                    'source' => $entity,
+                    'user' => $user->email,
+                    'id' => $logs->id,
+                    'message' => "$user->email has updated $entity entries.",
+                    'updates' => $changesVerbalized,
+                    'type' => 'updated',
+                    "date" => $logs->created,
+                ];
+            }
+            else if ($logs->type === 'delete') {
+                $verbalized[] = [
+                    'source' => $entity,
+                    'user' => $user->email,
+                    'id' => $logs->id,
+                    'message' => "$user->email has deleted this $entity.",
+                    'updates' => [],
+                    'type' => 'deleted',
+                    "date" => $logs->created,
+                ];
+            }
+
+        }
+        return $verbalized;
     }
 }

@@ -142,4 +142,17 @@ table .sub-table {
     border: 2px solid #fff;
     border-color: black transparent transparent transparent; }
 
+.logs-history {
+  max-height: 500px;
+  overflow-y: scroll; }
+  .logs-history .log-message {
+    margin-bottom: .3rem; }
+    .logs-history .log-message hr {
+      margin-top: 8px;
+      margin-bottom: 8px; }
+  .logs-history .time {
+    font-size: 1.2rem;
+    text-align: right;
+    margin-bottom: 20px; }
+
 /*# sourceMappingURL=custom.css.map */

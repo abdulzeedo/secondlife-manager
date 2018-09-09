@@ -169,3 +169,19 @@ table {
   }
 }
 
+.logs-history {
+  max-height: 500px;
+  overflow-y: scroll;
+  .log-message {
+    margin-bottom: .3rem;
+    hr {
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+  }
+  .time {
+    font-size: 1.2rem;
+    text-align: right;
+    margin-bottom: 20px;
+  }
+}
