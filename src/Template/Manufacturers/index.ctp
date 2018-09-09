@@ -29,8 +29,8 @@
             <tr>
                 <td><?= $this->Number->format($manufacturer->id) ?></td>
                 <td><?= h($manufacturer->name) ?></td>
-                <td><?= h($manufacturer->created) ?></td>
-                <td><?= h($manufacturer->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($manufacturer->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($manufacturer->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $manufacturer->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $manufacturer->id]) ?>

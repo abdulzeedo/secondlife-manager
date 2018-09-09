@@ -10,9 +10,7 @@
         'novalidate',
         ]);?>
         <div class="row">
-            <div class="col-md-8">
-
-
+            <div class="col-md-5">
                 <div id="phone-selection">
                     <?php
                         echo $this->Form->control('phone_id', [
@@ -26,6 +24,14 @@
                 </div>
             </div>
             <div class="col-md-4">
+                <?= $this->Form->control('date', [
+                        'id' => 'transactionDateTimePicker',
+                        'class' => 'datepicker',
+                        'required' => true
+                    ])
+                ?>
+            </div>
+            <div class="col-md-3">
                 <fieldset>
                     <?php
                 echo $this->Form->control('customer_id', [
@@ -56,7 +62,7 @@
                     <td>Action</td>
                 </tr>
             </thead>
-            <input type="hidden" name="phones[_ids]" class="form-control" value="">
+            <input type="hidden" name="phones" class="form-control" value="">
             <tbody>
 
             </tbody>

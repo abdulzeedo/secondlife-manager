@@ -15,5 +15,4 @@ abstract class OConnection
     abstract public function firstTimeLogin();
     abstract public function getAccessToken();
     abstract public function getFirstTimeAccessToken($authorization);
-
 }

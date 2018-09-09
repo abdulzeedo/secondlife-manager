@@ -44,6 +44,7 @@ class ItemReturnsTable extends Table
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
+        $this->addBehavior('AuditStash.AuditLog');
     }
 
     /**
@@ -95,5 +96,37 @@ class ItemReturnsTable extends Table
         $rules->add($rules->existsIn(['item_id'], 'Phones'));
 
         return $rules;
+    }
+    /**
+     * @param null $key
+     * @return array|mixed array with just the field specified in $key or all default field values
+     */
+    public function getDefaultValues($key = null) {
+        $values = [
+            'status' => [
+                ['value' => 'Return created', 'text' => 'Return created'],
+                ['value' => 'Return shipped', 'text' => 'Return shipped'],
+                ['value' => 'Return received', 'text' => 'Return received'],
+                ['value' => 'Return Inspected', 'text' => 'Return Inspected', 'data-subtext' => 'Add comments if needed'],
+                ['value' => 'Ready to be Resent', 'text' => 'Ready to be Resent', 'data-subtext' => 'Resend to customer'],
+                ['value' => 'On wait', 'text' => 'On wait', 'data-subtext' => 'In repair, out of stock etc.'],
+                ['value' => 'Resent', 'text' => 'Resent', 'data-subtext' => 'Hurray! Nice one!'],
+                ['value' => 'For resale', 'text' => 'For resale', 'data-subtext' => 'Just sell it to someone else!']
+            ],
+            'reason' => [
+                ['value' => 'Changed mind', 'text' => 'Changed mind', 'data-subtext' => 'recesso'],
+                ['value' => 'Not delivered', 'text' => 'Not delivered', 'data-subtext' => 'giacenze o altri pasticci di logistica'],
+                ['value' => 'Too dirty', 'text' => 'Too dirty', 'data-subtext' => 'grade not satisfying'],
+                ['value' => 'Battery', 'text' => 'Battery'],
+                ['value' => 'Audio', 'text' => 'Audio'],
+                ['value' => 'LCD', 'text' => 'LCD'],
+                ['value' => 'Buttons', 'text' => 'Buttons'],
+                ['value' => 'Other', 'text' => 'Other', 'data-subtext' => 'Wright some details in comments!'],
+            ]
+        ];
+        if ($key)
+            return $values[$key];
+
+        return $values;
     }
 }

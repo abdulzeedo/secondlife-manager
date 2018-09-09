@@ -49,13 +49,34 @@ Router::scope('/', function (RouteBuilder $routes) {
      * its action called 'display', and we pass a param to select the view file
      * to use (in this case, src/Template/Pages/home.ctp)...
      */
-    $routes->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
+    $routes->connect('/', ['controller' => 'Phones', 'action' => 'index']);
+
+
+    /**
+     * Change login default route
+     */
+    $routes->connect('/login', ['controller' => 'Users', 'action' => 'login']);
+    $routes->connect('/logout', ['controller' => 'Users', 'action' => 'logout']);
+    $routes->connect('/register', ['controller' => 'Users', 'action' => 'add']);
+
+
+    /**
+     * Phone controller routes
+     */
+    $routes->connect('/phones/edit/*', ['controller' => 'Phones', 'action' => 'connected']);
 
     /**
      * ...and connect the rest of 'Pages' controller's URLs.
      */
     $routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
 
+    $routes->connect('/ebaylogin/*', ['controller' => 'Ebaylogin', 'action' => 'index']);
+
+    /**
+     * Phone record match all vue app routes
+     */
+    $routes->connect('/phoneRecords', ['controller' => 'PhoneRecords', 'action' => 'index']);
+    $routes->connect('/phoneRecords/consistency-check/*', ['controller' => 'PhoneRecords', 'action' => 'index']);
     /**
      * Connect catchall routes for all controllers.
      *
@@ -75,7 +96,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->fallbacks(DashedRoute::class);
 });
 
-$routes->connect('/ebaylogin/*', ['controller' => 'Ebaylogin', 'action' => 'index']);
+
 
 
 /**

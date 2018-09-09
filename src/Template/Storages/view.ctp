@@ -30,11 +30,11 @@
         </tr>
         <tr>
             <th scope="row"><?= __('Created') ?></th>
-            <td><?= h($storage->created) ?></td>
+            <td><?= h($this->Time->i18nFormat($storage->created)) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Modified') ?></th>
-            <td><?= h($storage->modified) ?></td>
+            <td><?= h($this->Time->i18nFormat($storage->modified)) ?></td>
         </tr>
     </table>
     <div class="related">
@@ -54,8 +54,8 @@
                 <td><?= h($modelStorages->id) ?></td>
                 <td><?= h($modelStorages->storage_id) ?></td>
                 <td><?= h($modelStorages->model_id) ?></td>
-                <td><?= h($modelStorages->created) ?></td>
-                <td><?= h($modelStorages->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($modelStorages->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($modelStorages->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['controller' => 'ModelStorages', 'action' => 'view', $modelStorages->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['controller' => 'ModelStorages', 'action' => 'edit', $modelStorages->id]) ?>
@@ -99,8 +99,8 @@
                 <td><?= h($phones->grade) ?></td>
                 <td><?= h($phones->status) ?></td>
                 <td><?= h($phones->storage_id) ?></td>
-                <td><?= h($phones->created) ?></td>
-                <td><?= h($phones->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($phones->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($phones->modified)) ?></td>
                 <td><?= h($phones->comments) ?></td>
                 <td><?= h($phones->model_id) ?></td>
                 <td><?= h($phones->colour_id) ?></td>

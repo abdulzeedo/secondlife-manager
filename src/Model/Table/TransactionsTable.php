@@ -4,6 +4,7 @@ namespace App\Model\Table;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -47,8 +48,7 @@ class TransactionsTable extends Table
         $this->belongsTo('Phones', [
             'foreignKey' => 'item_id'
         ]);
-
-
+        $this->addBehavior('AuditStash.AuditLog');
     }
 
     /**
@@ -75,9 +75,9 @@ class TransactionsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
+
         $rules->add($rules->existsIn(['customer_id'], 'Customers'));
         $rules->add($rules->existsIn(['item_id'], 'Phones'));
-
         return $rules;
     }
 }

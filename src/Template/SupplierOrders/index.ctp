@@ -35,8 +35,8 @@
                 <td><?= h($supplierOrder->invoice_number) ?></td>
                 <td><?= h($supplierOrder->invoice_date) ?></td>
                 <td><?= $supplierOrder->has('supplier') ? $this->Html->link($supplierOrder->supplier->name, ['controller' => 'Suppliers', 'action' => 'view', $supplierOrder->supplier->id]) : '' ?></td>
-                <td><?= h($supplierOrder->created) ?></td>
-                <td><?= h($supplierOrder->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($supplierOrder->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($supplierOrder->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $supplierOrder->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $supplierOrder->id]) ?>

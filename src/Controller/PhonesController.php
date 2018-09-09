@@ -2,24 +2,31 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Core\Configure;
 use Cake\Filesystem\File;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use ZipArchive;
+use Cake\I18n\FrozenTime;
+
+use Cake\ORM\Query;
+use Cake\ORM\TableRegistry;
+
 
 /**
  * Phones Controller
  *
  * @property \App\Model\Table\PhonesTable $Phones
- * * @property \App\Model\Table\RepairsTable $Repairs
+ * @property \App\Model\Table\RepairsTable $Repairs
  *
  * @method \App\Model\Entity\Phone[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
 class PhonesController extends AppController
 {
+    use Phones\PhoneModalTrait;
+    use Phones\AdditionalOptionsTrait;
+    use Phones\PhoneAjaxTrait;
 
     public function initialize()
     {
+        $this->viewBuilder()->setLayout('bootstrap');
         parent::initialize();
 
         $this->loadComponent('Search.Prg', [
@@ -27,34 +34,53 @@ class PhonesController extends AppController
             // the PRG component work only for specified methods.
             'actions' => ['index', 'export']
         ]);
+        $this->loadComponent('Modal');
+
+        Configure::write('CakePdf', [
+            'engine' => 'CakePdf.Mpdf',
+            'margin' => [
+                'bottom' => 15,
+                'left' => 50,
+                'right' => 30,
+                'top' => 45
+            ],
+            'orientation' => 'landscape'
+        ]);
     }
 
-    public function imieiList($imiei = '') {
-        $this->autoRender = false;
-        $phones = $this->Phones->find('all', [
-            'conditions' => ['imiei LIKE' => '%'.$imiei.'%']
-        ])->toArray();
-
-        $phonesList = [];
-        foreach($phones as $phone) {
-
-            $phonesList[] = ['value' => $phone->id, 'text' => $phone->imiei, 'data-subtext' => $phone->label];
-        }
-        $this->response = $this->response->withStringBody(json_encode($phonesList));
-    }
     /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
+     * Generate key-value array type of query for all filters based on one main query
+     * @param $query
+     * @param $keyField
+     * @param $valueField
+     * @param $joinTable
+     * @return mixed Query
      */
+    protected function getQueryWithCount(Query $query, $keyField, $valueField, $joinTable, $getId) {
+        $newQuery = $query->cleanCopy()
+            ->find('list', [
+                'keyField' => function($entity) use($getId) {
+                    return $getId($entity);
+                },
+                'valueField' => 'countedValue'
+            ]);
 
-    public function debug() {
-        $this->autoRender = false;
-        debug($this->Phones->find()->contain(['Repairs']));
+        return $newQuery->innerJoinWith($joinTable)
+            ->group([$keyField])
+            ->select(['SupplierOrders.supplier_id', 'countedValue' => $newQuery->func()->concat([
+                $valueField => 'literal',
+                ' (',
+                'COUNT('.$keyField.')' => 'literal',
+                ')'
+            ])
+            ])
+            ->enableAutoFields(true);
+
     }
 
     public function index()
     {
+//        debug($this->request->getQueryParams());
         $this->viewBuilder()->setLayout('bootstrap');
         $query = $this->Phones
             // Use the plugins 'search' custom finder and pass in the
@@ -62,64 +88,42 @@ class PhonesController extends AppController
             ->find('search', ['search' => $this->request->getQueryParams()])
             ->contain(['Repairs', 'ItemReturns', 'SupplierOrders.Suppliers'])->distinct();
 
-        $this->paginate = [
-            'contain' => ['Storages', 'Models', 'Colours', 'Users']
-        ];
+        $query->contain(
+            ['Storages', 'Models', 'Colours', 'Users']
+        );
+        $storages = $this->getQueryWithCount($query, 'storage_id', 'Storages.storage',
+                                             'Storages', function($entity){return $entity->get('storage_id');});
 
-        $storages = $this->Phones->Storages->find('list', ['limit' => 200]);
-        $users = $this->Phones->Users->find('list', ['limit' => 200]);
-        $models = $this->Phones->Models->find('list', ['limit' => 200]);
-        $colours = $this->Phones->Colours->find('list', ['limit' => 200]);
-        $suppliers = $this->Phones->SupplierOrders->Suppliers->find('list', ['limit' => '200']);
+        $users = $this->getQueryWithCount($query, 'user_id', 'Users.email',
+        'Users', function($entity){return $entity->get('user_id');});
+//        $users = $this->Phones->Users->find('list', ['limit' => 200]);
+        $models = $this->getQueryWithCount($query, 'model_id', 'Models.name',
+            'Models', function($entity){return $entity->get('model_id');});
 
-        $repairs = $this->getRepairDefaultValues()['status'];
+//        $models = $this->Phones->Models->find('list', ['limit' => 200]);
+        $colours = $this->getQueryWithCount($query, 'colour_id', 'Colours.colour_name',
+            'Colours', function($entity){return $entity->get('colour_id');});
+//        $colours = $this->Phones->Colours->find('list', ['limit' => 200]);
+        $suppliers = $this->getQueryWithCount($query, 'SupplierOrders.supplier_id', 'Suppliers.name',
+            'SupplierOrders.Suppliers', function($entity){return $entity->supplier_order->supplier_id;});
+//        debug($suppliers->toArray());
+//        $suppliers = $this->Phones->SupplierOrders->Suppliers->find('list', ['limit' => '200']);
+//        $customers = $this->getQueryWithCount($query, 'Customers.id', 'Customers.name',
+//            'Customers', function($entity){return $entity->customers->id;});
+        $customers = $this->Phones->Customers->find('list');
+        $repairs = $this->Phones->Repairs->getDefaultValues('status');
         $repairs[] = [
             'text' => 'All repairs: any status',
             'value' => 'any'
         ];
 
-        $this->set('phones', $this->paginate($query));
-        $this->set(compact('storages', 'models', 'colours', 'users', 'suppliers', 'repairs'));
+        $repairsReason = $this->Phones->Repairs->getDefaultValues('reason');
+
+        $this->set('phones', $query);
+        $this->set(compact('storages', 'models', 'colours', 'users', 'suppliers', 'repairs', 'repairsReason', 'customers'));
     }
 
-    /**
-     * Used to generate a CSV file of the current table
-     */
-    public function export()
-    {
-        $query = $this->Phones
-            // Use the plugins 'search' custom finder and pass in the
-            // processed query params
-            ->find('search', ['search' => $this->request->getQueryParams()])
-            ->contain(['Repairs', 'ItemReturns', 'SupplierOrders.Suppliers'])
-            ->distinct()->all();
 
-        $_serialize = 'query';
-        $_header = ['Internal ID', 'IMIEI', 'Serial N', 'Status', 'Description', 'Comments',
-                    'Battery Cycles', 'Created', 'Supplier Name', 'Repair description'];
-        $_extract = [
-            'id',
-            'imiei',
-            'serial_number',
-            'status',
-            'label',
-            'comments',
-            'battery_cycles',
-            'created',
-            'supplier_order.supplier.name',
-            function ($row) {
-                $labelsList = '';
-                foreach($row['repairs'] as $repair) {
-                    $labelsList .= $repair['id']. ': Reason (' . $repair['reason']. ') '
-                        . ' Comments: ' . $repair['comments'];
-                }
-                return $labelsList;
-            }
-        ];
-
-        $this->viewBuilder()->setClassName('CsvView.Csv');
-        $this->set(compact('query', '_serialize', '_header', '_extract'));
-    }
     /**
      * View method
      *
@@ -131,257 +135,13 @@ class PhonesController extends AppController
     {
         $this->viewBuilder()->setLayout("bootstrap");
         $phone = $this->Phones->get($id, [
-            'contain' => ['Storages', 'Models', 'Colours', 'Repairs', 'ItemReturns', 'Transactions.Customers', 'SupplierOrders.Suppliers']
+            'contain' => ['Storages', 'Models', 'Colours', 'Repairs', 'ItemReturns', 'Customers', 'SupplierOrders.Suppliers']
         ]);
 
         $this->set('phone', $phone);
         $this->set('customer', $this->Phones->Customers->find('all')->last());
     }
 
-    private function getRepairDefaultValues() {
-        $values = [
-            'status' => [
-                ['value' => 'Repair created', 'text' => 'Repair created'],
-                ['value' => 'In repair', 'text' => 'In repair'],
-                ['value' => 'Repaired', 'text' => 'Repaired', 'data-subtext' => 'Inspection phase'],
-                ['value' => 'Testing', 'text' => 'Testing', 'data-subtext' => 'Test thoroughly'],
-                ['value' => 'Complete', 'text' => 'Complete', 'data-subtext' => 'Great!']
-            ],
-            'reason' => [
-                ['value' => 'LCD', 'text' => 'LCD'],
-                ['value' => 'Battery', 'text' => 'Battery'],
-                ['value' => 'Audio', 'text' => 'Audio'],
-                ['value' => 'Flash', 'text' => 'Flash'],
-                ['value' => 'Back Camera', 'text' => 'Back Camera'],
-                ['value' => 'Front Camera', 'text' => 'Front Camera'],
-                ['value' => 'Proximity Sensor', 'text' => 'Proximity Sensor'],
-                ['value' => 'Other', 'text' => 'Other', 'data-subtext' => 'Wright some details in comments!'],
-            ]
-        ];
-        return $values;
-    }
-
-    private function getReturnDefaultValues() {
-        $values = [
-            'status' => [
-                ['value' => 'Return created', 'text' => 'Return created'],
-                ['value' => 'Return shipped', 'text' => 'Return shipped'],
-                ['value' => 'Return received', 'text' => 'Return received'],
-                ['value' => 'Return Inspected', 'text' => 'Return Inspected', 'data-subtext' => 'Add comments if needed'],
-                ['value' => 'On wait', 'text' => 'On wait', 'data-subtext' => 'In repair, out of stock etc.'],
-                ['value' => 'Resent', 'text' => 'Resent', 'data-subtext' => 'Hurray! Nice one!']
-            ],
-            'reason' => [
-                ['value' => 'Changed mind', 'text' => 'Changed mind', 'data-subtext' => 'recesso'],
-                ['value' => 'Too dirty', 'text' => 'Too dirty', 'data-subtext' => 'grade not satisfying'],
-                ['value' => 'Battery', 'text' => 'Battery'],
-                ['value' => 'Audio', 'text' => 'Audio'],
-                ['value' => 'LCD', 'text' => 'LCD'],
-                ['value' => 'Other', 'text' => 'Other', 'data-subtext' => 'Wright some details in comments!'],
-            ]
-        ];
-        return $values;
-    }
-    public function editRepairModal ($id = null) {
-        $this->viewBuilder()->setLayout(false);
-        $repair = $this->Phones->Repairs->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $repair = $this->Phones->Repairs->patchEntity($repair, $this->request->getData());
-            if (!$this->Phones->Repairs->save($repair)) {
-                $this->response = $this->response->withStatus(400);
-            }
-
-        }
-
-        $phones = $this->Phones->find('all')->toArray();
-
-        $phonesList = [];
-        foreach($phones as $phone) {
-            $phonesList[] = ['value' => $phone->id, 'text' => $phone->imiei, 'data-subtext' => $phone->label];
-        }
-        $values = $this->getRepairDefaultValues();
-        $this->set(compact('repair', 'phonesList', 'values'));
-    }
-
-    public function editReturnModal ($id = null) {
-        $this->viewBuilder()->setLayout(false);
-        $return = $this->Phones->ItemReturns->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $return = $this->Phones->ItemReturns->patchEntity($return, $this->request->getData());
-            if (!$this->Phones->ItemReturns->save($return)) {
-                $this->response = $this->response->withStatus(400);
-            }
-
-        }
-
-
-
-        $phones = $this->Phones->find('all')->toArray();
-
-        $phonesList = [];
-        foreach($phones as $phone) {
-            $phonesList[] = ['value' => $phone->id, 'text' => $phone->imiei, 'data-subtext' => $phone->label];
-        }
-        $values = $this->getReturnDefaultValues();
-
-        $this->set(compact('return', 'phonesList', 'values'));
-    }
-
-    /**
-     * @param null $id
-     */
-    public function addRepairModal ($id = null) {
-        $this->viewBuilder()->setLayout(false);
-        $repair = $this->Phones->Repairs->newEntity();
-
-        if ($id)
-            $repair->item_id = $id;
-
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $repair = $this->Phones->Repairs->patchEntity($repair, $this->request->getData());
-            if (!$this->Phones->Repairs->save($repair)) {
-                $this->response = $this->response->withStatus(400);
-            }
-
-        }
-
-        $phones = $this->Phones->find('all')->toArray();
-
-        $phonesList = [];
-        foreach($phones as $phone) {
-
-            $phonesList[] = ['value' => $phone->id, 'text' => $phone->imiei, 'data-subtext' => $phone->label];
-        }
-        $values = $this->getRepairDefaultValues();
-        $this->set(compact('repair', 'phonesList', 'values'));
-        $this->viewBuilder()->setTemplate('edit_repair_modal');
-
-    }
-
-    public function addReturnModal ($id = null) {
-        $this->viewBuilder()->setLayout(false);
-        $return = $this->Phones->ItemReturns->newEntity();
-
-        if ($id)
-            $return->item_id = $id;
-
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $return = $this->Phones->ItemReturns->patchEntity($return, $this->request->getData());
-            if (!$this->Phones->ItemReturns->save($return)) {
-                $this->response = $this->response->withStatus(400);
-            }
-
-        }
-
-
-        $phones = $this->Phones->find('all')->toArray();
-
-        $phonesList = [];
-        foreach($phones as $phone) {
-
-            $phonesList[] = ['value' => $phone->id, 'text' => $phone->imiei, 'data-subtext' => $phone->label];
-        }
-
-        $values = $this->getReturnDefaultValues();
-
-        $this->set(compact('return', 'phonesList', 'values'));
-        $this->viewBuilder()->setTemplate('edit_return_modal');
-
-    }
-
-    public function addTransactionsModal() {
-        $this->viewBuilder()->setLayout(false);
-
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $customer = $this->Phones->Customers->get($this->request->getData('customer_id'),
-                [ 'associated' => ['Phones']]);
-
-            $customer = $this->Phones->Customers->patchEntity($customer, $this->request->getData(),
-                ['associated' => ['Phones']]);
-            if (!$this->Phones->Customers->save($customer)) {
-                $this->response = $this->response->withStatus(400);
-            }
-        }
-
-        $customersList = $this->Phones->Customers->find('list', ['limit' => '200']);
-
-        $this->set(compact('customersList'));
-    }
-
-    public function addSupplierItemsModal() {
-        $this->viewBuilder()->setLayout(false);
-
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $imieiString = $this->request->getData("phones_list");
-            $imieiList = explode("\n", $imieiString);
-
-
-            foreach($imieiList as $imiei) {
-                // Try to retrieve the object from database, if it doesn't exist
-                // create a new entity
-                $phone = $this->Phones->find('all', [
-                    'conditions' => ['imiei' => trim($imiei)]
-                ]);
-
-                debug($phone->isEmpty());
-
-
-                if ($phone->isEmpty()) {
-                    $phone = $this->Phones->newEntity($this->request->getData());
-                    $phone->imiei = $imiei;
-                    // Set serial_number the same as imiei to maintain unique key
-                    // and it might be used to check which iPhones have not yet tested.
-                    $phone->serial_number = $imiei;
-                }
-                else {
-                    // If it already exists update with data from the form such as
-                    // supplier order id
-                    $phone = $this->Phones->patchEntity($phone->first(), $this->request->getData());
-                }
-
-                /**
-                 * ATTENTION: function returns as soon as there is a validation error
-                 * TODO: add some validation error message here
-                 **/
-                if(!$this->Phones->save($phone)) {
-                    $this->response = $this->response->withStatus(400);
-                    return;
-                }
-            }
-        }
-
-        $suppliersList = $this->Phones->SupplierOrders->Suppliers->find('list', ['limit' => '200']);
-        $this->set(compact('suppliersList'));
-    }
-
-    public function repairsTable($id = null) {
-        $this->viewBuilder()->setLayout(false);
-        if ($this->request->is('ajax')) {
-
-            $phone = $this->Phones->get($id, [
-                'contain' => ['Storages', 'Models', 'Colours', 'Repairs', 'ItemReturns']
-            ]);
-            $this->set('phone', $phone);
-
-        }
-        $this->viewBuilder()->setTemplate('/Element/Common/repairs');
-    }
-    public function returnsTable($id = null) {
-        $this->viewBuilder()->setLayout(false);
-        if ($this->request->is('ajax')) {
-
-            $phone = $this->Phones->get($id, [
-                'contain' => ['Storages', 'Models', 'Colours', 'Repairs', 'ItemReturns']
-            ]);
-            $this->set('phone', $phone);
-
-        }
-        $this->viewBuilder()->setTemplate('/Element/Common/returns');
-    }
     /**
      * Add method
      *
@@ -457,12 +217,18 @@ class PhonesController extends AppController
 
         $this->viewBuilder()->setLayout("bootstrap");
         $phone = $this->Phones->get($id, [
-            'contain' => ['Storages', 'Models', 'Colours', 'Repairs', 'ItemReturns']
+            'contain' => ['Storages', 'Models', 'Colours', 'Repairs', 'ItemReturns', 'Customers', 'SupplierOrders.Suppliers']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $phone = $this->Phones->patchEntity($phone, $this->request->getData());
             if ($this->Phones->save($phone)) {
-                $this->Flash->success(__('The phone has been saved.'));
+                $this->Flash->success(
+                    '<p>The phone has been saved: '
+                        .'<b>'.$phone->label . '</b> - '. $phone->imiei .'</p>'
+                        .'<p><a href="/phones/connected/'.$phone->id.'" class="btn btn-primary btn-sm">Edit</a>'
+                        .' <a href="/phones/view/'.$phone->id.'" class="btn btn-default btn-sm">View</a></p>',
+                        ['escape' => false]
+                );
 
                 return $this->redirect(['action' => 'index']);
             }
@@ -484,6 +250,7 @@ class PhonesController extends AppController
             ];
             if ($phone->sim_lock_status === '' || !$phone->sim_lock_status)
                 $this->request = $this->request->withData('sim_lock_status', 'unlocked');
+
         }
         $storages = $this->Phones->Storages->find('list', ['limit' => 200]);
         $models = $this->Phones->Models->find('list', ['limit' => 200]);
@@ -492,72 +259,6 @@ class PhonesController extends AppController
     }
 
     public function connection() {
-        $this->viewBuilder()->setLayout('bootstrap');
 
-    }
-
-
-    // Used to download software for diagnosis
-    public function download(){
-
-        $this->autoRender= false;
-        //  Write the config ini file
-        $file = new File( WWW_ROOT.DS.'files'.DS.'IPhoneDiagnostics'.DS.'config.ini');
-
-        $user = $this->Auth->user();
-
-
-
-        $file->write(
-                "[DEFAULT] \n"
-                . 'email = ' . $user["email"] . "\n"
-                . 'api_key = ' . $user["api_key_plain"] . "\n"
-                . 'server_address = ' . 'http://' .$this->request->host() . "\n"
-        );
-
-        $file->close(); // Be sure to close the file when you're done
-
-        $this->compressFolder();
-
-        $file_path = WWW_ROOT.DS.'files'.DS.'iPhoneDiagnostics.zip';
-
-        return $this->response->withFile($file_path, [
-            'download' => true,
-            'name' => 'iPhoneDiagnosis.zip',
-        ]);
-    }
-
-    protected function compressFolder() {
-        // Get real path for our folder
-        // The folder must not be a symbolic link
-        $rootPath =  realpath(WWW_ROOT.DS.'files'.DS.'IPhoneDiagnostics');
-
-        // Initialize archive object
-        $zip = new ZipArchive();
-        $zip->open('files/iPhoneDiagnostics.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE);
-
-        // Create recursive directory iterator
-        /** @var SplFileInfo[] $files */
-        $files = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($rootPath),
-            RecursiveIteratorIterator::LEAVES_ONLY
-        );
-
-        foreach ($files as $name => $file)
-        {
-            // Skip directories (they would be added automatically)
-            if (!$file->isDir())
-            {
-                // Get real and relative path for current file
-                $filePath = $file->getRealPath();
-                $relativePath = substr($filePath, strlen($rootPath) + 1);
-                $stat = stat($filePath);
-                // Add current file to archive
-                $zip->addFile($filePath, $relativePath);
-                $zip->setExternalAttributesName($relativePath, ZipArchive::OPSYS_UNIX, $stat["mode"]);
-            }
-        }
-        // Zip archive will be created only after closing object
-        $zip->close();
     }
 }

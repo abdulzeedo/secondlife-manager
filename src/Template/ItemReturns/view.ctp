@@ -40,11 +40,11 @@
         </tr>
         <tr>
             <th scope="row"><?= __('Created') ?></th>
-            <td><?= h($itemReturn->created) ?></td>
+            <td><?= h($this->Time->i18nFormat($itemReturn->created)) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Modified') ?></th>
-            <td><?= h($itemReturn->modified) ?></td>
+            <td><?= h($this->Time->i18nFormat($itemReturn->modified)) ?></td>
         </tr>
     </table>
     <div class="row">

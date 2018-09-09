@@ -28,11 +28,11 @@
         </tr>
         <tr>
             <th scope="row"><?= __('Created') ?></th>
-            <td><?= h($manufacturer->created) ?></td>
+            <td><?= h($this->Time->i18nFormat($manufacturer->created)) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Modified') ?></th>
-            <td><?= h($manufacturer->modified) ?></td>
+            <td><?= h($this->Time->i18nFormat($manufacturer->modified)) ?></td>
         </tr>
     </table>
     <div class="related">
@@ -52,8 +52,8 @@
                 <td><?= h($models->id) ?></td>
                 <td><?= h($models->mobile_model) ?></td>
                 <td><?= h($models->manufacturer_id) ?></td>
-                <td><?= h($models->created) ?></td>
-                <td><?= h($models->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($models->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($models->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['controller' => 'Models', 'action' => 'view', $models->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['controller' => 'Models', 'action' => 'edit', $models->id]) ?>

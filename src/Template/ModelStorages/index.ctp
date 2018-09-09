@@ -33,8 +33,8 @@
                 <td><?= $this->Number->format($modelStorage->id) ?></td>
                 <td><?= $modelStorage->has('storage') ? $this->Html->link($modelStorage->storage->storage, ['controller' => 'Storages', 'action' => 'view', $modelStorage->storage->id]) : '' ?></td>
                 <td><?= $modelStorage->has('model') ? $this->Html->link($modelStorage->model->mobile_model, ['controller' => 'Models', 'action' => 'view', $modelStorage->model->id]) : '' ?></td>
-                <td><?= h($modelStorage->created) ?></td>
-                <td><?= h($modelStorage->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($modelStorage->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($modelStorage->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $modelStorage->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $modelStorage->id]) ?>

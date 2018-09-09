@@ -31,8 +31,8 @@
                 <td><?= $this->Number->format($customer->id) ?></td>
                 <td><?= h($customer->name) ?></td>
                 <td><?= h($customer->location) ?></td>
-                <td><?= h($customer->created) ?></td>
-                <td><?= h($customer->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($customer->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($customer->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $customer->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $customer->id]) ?>

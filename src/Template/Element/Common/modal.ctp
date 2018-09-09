@@ -28,11 +28,11 @@
 </div>
 <script>
     function printForm(data) {
-
         $('.modal-content').replaceWith(data);
         $('#myModal').modal('show');
         if ( $('.selectpicker').length)
             $('.selectpicker').selectpicker('refresh');
+        $('.modal').trigger("ajax.modal.loaded");
     }
 
     function showAlert(message) {
@@ -78,9 +78,12 @@
 
     function getSupplierOrdersListAJAX(input) {
         return $.ajax({
-            type: "GET",
-            url: '/supplier-orders/getSupplierOrders/' + input,
-            dataType: 'json',
+            type: "POST",
+            url: '/supplier-orders/getSupplierOrders',
+            data: {
+                "ids": input
+            },
+            dataType: 'html',
         });
     }
 
@@ -91,7 +94,7 @@
                     // Don't remove the first option (which is empty option)
                     $('#phone-id option:gt(0)').remove()
                     // Loop through
-                    $.each(elements, function(i, element) {
+                    $.each(elements.phonesList, function(i, element) {
                         $('#phone-id').append($('<option>', {
                             value: element.value,
                             text: element.text,
@@ -99,15 +102,16 @@
                         }));
                     });
                 },
-                    function(){console.log('error')})
-                .then(function(){console.log('loaded')})
+                    function(){console.log('error list not loaded')})
+                .then(function(){console.log('Imiei list loaded')})
                 .then(function() {
                     $('#phone-id').selectpicker('refresh');
                 });
     }
+    var phoneRowIndex = 0;
     function createPhoneRow() {
 
-        addMessage = function(message, type) {
+        var addMessage = function(message, type) {
             // First remove from any messages
             cleanFromMessages();
             if (type == 'success') {
@@ -134,7 +138,7 @@
             return; // TODO: add warning
         }
 
-        table = $('#phones-table');
+        var table = $('#phones-table');
 
         // Check whether the current ID is already in the table
         let id = $('#phone-selection option:selected').val();
@@ -167,23 +171,27 @@
 
         table.find('tbody').append(
           $('<tr>'
-
-              + '<input type="hidden" name="phones[_ids][]" class="form-control" value="'+ id +'">'
+              + `<input type="hidden" name=phones[${phoneRowIndex}][id] class="form-control" value="${id}">`
+              + `<input type="hidden" name=phones[${phoneRowIndex}][_joinData][] class="form-control" value>`
           + '<td>' + id + '</td>'
           + '<td>' + imiei + '</td>'
           + '<td>' + description + '</td>'
           + '<td><a href="#" class="phone-remove btn btn-danger" data-id="'+ id +'">Remove</a></td>'
           + '</tr>').data('id', id)
         );
+        phoneRowIndex++;
 
     }
     function removePhoneRow() {
-        id = $(this).attr('data-id');
-        trParent = $(this).parents('tr');
-        console.log(trParent);
+        var id = $(this).attr('data-id');
+        var trParent = $(this).parents('tr');
+        // If there is a row related to this row remove that one as well
+        // that row can be of type error for instance
+        if (trParent.next().data('id') === parseInt(id))
+            trParent.next().remove();
         trParent.remove();
 
-        table = $('#phones-table');
+        var table = $('#phones-table');
         // Make table invisible if there are no elements to show
         if (table.find('tbody').has('td').length == 0)
             table.addClass('hidden');
@@ -207,6 +215,7 @@
             if (id !== null || id !== '')
                 getSupplierOrdersListAJAX(id)
                     .then(function (elements) {
+                            elements = JSON.parse(elements);
                             // Don't remove the first option (which is empty option)
                             $('#supplier-order-id option:gt(0)').remove()
                             // Loop through
@@ -226,6 +235,7 @@
         }
     }
     $(document).ready(function () {
+
         $('body').on('changed.bs.select', cleanFromMessages);
         $('body').on('changed.bs.select', getSupplierOrders);
 
@@ -249,6 +259,7 @@
                 success: function(res) {
                     // Show modal with Form
 
+
                     printForm(res);
                 },
                 error:function(request, status, error) {
@@ -269,41 +280,59 @@
         $(".modal").on('submit', '.form-ajax', function(event) {
             /* stop form from submitting normally */
             event.preventDefault();
+
             var $form = $(this),
                 url = $form.attr('action');
             var table_url = $(this).data("tableUrl");
             var table_id = $(this).data("tableId");
             console.log($(".form-ajax").serialize());
 
+            $("#transactions").trigger("ajax.before.submit", [$form]);
 
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: $(".form-ajax").serialize(), // serializes the form's elements.
-                success: function(res)
-                {
-                    // Only if defined otherwise don't print table
-                    if (table_url && table_id) {
-                        $('#' + table_id).LoadingOverlay("show");
-                        getTable(table_url, table_id).always(()=>{
-                            console.log('complete')
-                            $('#' + table_id).LoadingOverlay("hide");
-                        });
+            var formIsValid = $form.data('is-valid');
+
+
+            if (formIsValid === undefined || formIsValid) {
+                $(event.currentTarget).LoadingOverlay("show");
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: $(".form-ajax").serialize(), // serializes the form's elements.
+                    success: function(res)
+                    {
+                        // Only if defined otherwise don't print table
+                        if (table_url && table_id) {
+                            $('#' + table_id).LoadingOverlay("show");
+                            getTable(table_url, table_id).always(()=>{
+                                console.log('complete')
+                                $('#' + table_id).LoadingOverlay("hide");
+                            });
+                        }
+                        printForm(res);
+                        console.log('printed form')
+
+                        $('#myModal').modal('hide');
+                        showAlert('Data updated successfully');
+                    },
+                    error:function(request, status, error) {
+                        console.log('Errore');
+                        $().showAlert('Error occurred after submission.<br>If no error is shown refresh the page and try again.', 'error');
+
+                        if (request.responseJSON) {
+                            $(event.currentTarget).trigger("error.json.response", [request.responseJSON])
+                        }
+                        else {
+                            printForm(request.responseText);
+                        }
+
                     }
-                    printForm(res);
-                    console.log('printed form')
+                }).always(()=>{
+                    // Hide the loading icon now
+                    $(event.currentTarget).LoadingOverlay("hide");
+                });
+            }
 
-                    $('#myModal').modal('hide');
-                    showAlert('Data updated successfully');
 
-
-                },
-                error:function(request, status, error) {
-                    console.log('Errore ');
-                    showAlert('Error occurred');
-                    printForm(request.responseText);
-                }
-            });
         });
 
         // Delete record from table
@@ -334,69 +363,6 @@
                 }
             });
         });
-
-        /**
-         * Implement barcode scan detector event
-         *
-         */
-        new BarcodeScanner();
-        $(document).on('barcode',function(e,code){
-            if($('.modal').is(':hidden') && window.location.pathname === "/phones") {
-                /**
-                 * Set the value of input field so that all other
-                 * filters can still be applied
-                 */
-                $('#q').val(code);
-                $("#home-filter-form").submit();
-            }
-        });
     });
-    var BarcodeScanner = function(options) {
-        this.initialize.call(this, options);
-    };
-
-    BarcodeScanner.prototype = {
-        initialize: function(options) {
-            $.extend(this._options,options);
-            $(document).on({
-                keyup: $.proxy(this._keyup, this)
-            });
-        },
-        fire: function(str){
-            $(document).trigger('barcode',str);
-        },
-        _options: {timeout: 600, prefixKeyCode: 52, suffixKeyCode: 13, minKeyCode: 32, maxKeyCode: 126},
-        _isReading: false,
-        _timeoutHandler: false,
-        _inputString: '',
-        _keyup: function (e) {
-            if(this._isReading){
-                if(e.keyCode==this._options.suffixKeyCode){
-                    //read end
-                    if (this._timeoutHandler)
-                        clearTimeout(this._timeoutHandler);
-                    this._isReading=false;
-                    this.fire.call(this,this._inputString);
-                    this._inputString='';
-                }else{
-                    //char reading
-                    if(e.which>=this._options.minKeyCode && e.which<=this._options.maxKeyCode)
-                        this._inputString += String.fromCharCode(e.which);
-                }
-            }else{
-                if(e.keyCode==this._options.prefixKeyCode){
-                    //start reading
-
-                    this._isReading=true;
-                    this._timeoutHandler = setTimeout($.proxy(function () {
-                        //read timeout
-                        this._inputString='';
-                        this._isReading=false;
-                        this._timeoutHandler=false;
-                    }, this), this._options.timeout);
-                }
-            }
-        }
-    };
 
 </script>

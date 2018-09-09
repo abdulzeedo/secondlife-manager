@@ -30,6 +30,7 @@ class Transaction extends Entity
     protected $_accessible = [
         'customer_id' => true,
         'item_id' => true,
+        'date' => true,
         'created' => true,
         'modified' => true,
         'customer' => true,

@@ -38,8 +38,8 @@
                 <td><?= $this->Number->format($model->id) ?></td>
                 <td><?= h($model->name) ?></td>
                 <td><?= $model->has('manufacturer') ? $this->Html->link($model->manufacturer->name, ['controller' => 'Manufacturers', 'action' => 'view', $model->manufacturer->id]) : '' ?></td>
-                <td><?= h($model->created) ?></td>
-                <td><?= h($model->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($model->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($model->modified)) ?></td>
                 <td><?= h($model->model_code) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $model->id]) ?>

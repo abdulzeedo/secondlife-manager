@@ -33,8 +33,8 @@
                 <td><?= h($user->password) ?></td>
                 <td><?= h($user->api_key_plain) ?></td>
                 <td><?= h($user->api_key) ?></td>
-                <td><?= h($user->created) ?></td>
-                <td><?= h($user->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($user->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($user->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $user->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $user->id]) ?>

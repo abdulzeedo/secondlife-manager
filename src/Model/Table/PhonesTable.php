@@ -4,6 +4,7 @@ namespace App\Model\Table;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -68,6 +69,10 @@ class PhonesTable extends Table
             'foreignKey' => 'item_id'
         ]);
 
+        $this->hasMany('PhoneRecords', [
+            'foreignKey' => 'item_id'
+        ]);
+
         // Add the behaviour to your table
         $this->addBehavior('Search.Search');
 
@@ -86,14 +91,20 @@ class PhonesTable extends Table
         $this->belongsTo('SupplierOrders', [
             'foreignKey' => 'supplier_order_id'
         ]);
+        $this->addBehavior('AuditStash.AuditLog', [
+            'whitelist' => ['item_returns.comments']
+        ]);
 
         // Setup search filter using search manager
         $this->searchManager()
-            ->value('storage_id')
-            ->value('model_id')
+            ->value('storage_id', ['multiValue' => true])
+            ->value('model_id', ['multiValue' => true])
             ->value('grade')
-            ->value('colour_id')
-            ->value('user_id')
+            ->value('colour_id', ['multiValue' => true])
+            ->value('user_id', ['multiValue' => true])
+            ->value('supplier_order_id', ['multiValue' => true])
+            ->value('icloud_status')
+            ->value('touch_id_status')
             // Here we will alias the 'q' query param to search the `Articles.title`
             // field and the `Articles.content` field, using a LIKE match, with `%`
             // both before and after.
@@ -109,22 +120,43 @@ class PhonesTable extends Table
             ->add('supplier_id', 'Search.Callback', [
                 'callback' => function (Query $query, $args, $filter) {
                     $query
-                        ->where('Suppliers.id', $args['supplier_id']);
+                        ->where(['Suppliers.id IN' => $args['supplier_id']]);
+                }
+            ])
+            ->add('is_phone_available', 'Search.Callback', [
+                'callback' => function(Query $query, $args, $filter) {
+                    $phones = TableRegistry::get('Phones');
+                    $query->find('availablePhones', ['available' => true]);
+                }
+            ])
+            ->add('customer_id', 'Search.Callback', [
+                'callback' => function (Query $query, $args, $filter) {
+                    $query
+                        ->innerJoinWith('Customers', function ($q) use ($args) {
+                            return $q->where(['Customers.id IN' => $args['customer_id']]);
+                        });
                 }
             ])
             ->add('Repairs.status', 'Search.Callback', [
                 'callback' => function (Query $query, $args, $filter) {
                     // If not any
-                    if (strcmp($args['Repairs.status'], "any") != 0){
+                    if (!in_array("any", $args['Repairs.status'])) {
                         $query
                             ->innerJoinWith('Repairs', function ($q) use ($args) {
-                                return $q->where(['Repairs.status' => $args['Repairs.status']]);
+                                return $q->where(['Repairs.status IN' => $args['Repairs.status']]);
                         });
                     }
                     else {
                         $query->innerJoinWith('Repairs');
                     }
-
+                }
+            ])
+            ->add('Repairs.reason', 'Search.Callback', [
+                'callback' => function (Query $query, $args, $filter) {
+                    $query
+                        ->innerJoinWith('Repairs', function ($q) use ($args) {
+                            return $q->where(['Repairs.reason IN' => $args['Repairs.reason']]);
+                        });
                 }
             ]);
     }
@@ -225,5 +257,25 @@ class PhonesTable extends Table
         $rules->add($rules->existsIn(['colour_id'], 'Colours'));
 
         return $rules;
+    }
+
+    public function findAvailablePhones(Query $query, array $options) {
+        if ($options["available"])
+            $available = $options["available"];
+        else
+            $available = true;
+        $array= [];
+        $phones = $this->find()->enableAutoFields(true)->all();
+        foreach ($phones as $phone)
+            if ($phone->is_phone_available)
+                $array[] = $phone->id;
+        if ($available)
+            $query
+                ->where(['Phones.id IN' => $array]);
+        else
+            $query
+                ->where(['Phones.id NOT IN' => $array]);
+
+        return $query;
     }
 }

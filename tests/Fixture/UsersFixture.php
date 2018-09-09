@@ -42,8 +42,8 @@ class UsersFixture extends TestFixture
     public $records = [
         [
             'id' => 1,
-            'email' => 'Lorem ipsum dolor sit amet',
-            'password' => 'Lorem ipsum dolor sit amet',
+            'email' => 'testing',
+            'password' => 'testing',
             'api_key_plain' => 'Lorem ipsum dolor sit amet',
             'api_key' => 'Lorem ipsum dolor sit amet',
             'created' => '2018-07-05 11:31:38',

@@ -35,8 +35,8 @@
                 <td><?= h($itemReturn->status) ?></td>
                 <td><?= h($itemReturn->refund) ?></td>
                 <td><?= $itemReturn->has('phone') ? $this->Html->link($itemReturn->phone->label, ['controller' => 'Phones', 'action' => 'view', $itemReturn->phone->id]) : '' ?></td>
-                <td><?= h($itemReturn->created) ?></td>
-                <td><?= h($itemReturn->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($itemReturn->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($itemReturn->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $itemReturn->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $itemReturn->id]) ?>

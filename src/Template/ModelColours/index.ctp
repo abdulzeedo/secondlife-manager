@@ -33,8 +33,8 @@
                 <td><?= $this->Number->format($modelColour->id) ?></td>
                 <td><?= $modelColour->has('colour') ? $this->Html->link($modelColour->colour->colour_name, ['controller' => 'Colours', 'action' => 'view', $modelColour->colour->id]) : '' ?></td>
                 <td><?= $modelColour->has('model') ? $this->Html->link($modelColour->model->mobile_model, ['controller' => 'Models', 'action' => 'view', $modelColour->model->id]) : '' ?></td>
-                <td><?= h($modelColour->created) ?></td>
-                <td><?= h($modelColour->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($modelColour->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($modelColour->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $modelColour->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $modelColour->id]) ?>

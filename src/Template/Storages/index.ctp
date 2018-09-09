@@ -31,8 +31,8 @@
             <tr>
                 <td><?= $this->Number->format($storage->id) ?></td>
                 <td><?= h($storage->storage) ?></td>
-                <td><?= h($storage->created) ?></td>
-                <td><?= h($storage->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($storage->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($storage->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $storage->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $storage->id]) ?>

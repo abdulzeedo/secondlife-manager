@@ -47,6 +47,9 @@ class UsersTable extends Table
         $this->hasMany('ConnectedPhones', [
             'foreignKey' => 'user_id'
         ]);
+        $this->hasMany('PhoneRecords', [
+            'foreignKey' => 'user_id'
+        ]);
 
         $this->addBehavior('Timestamp');
     }
@@ -105,7 +108,9 @@ class UsersTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['email']));
+        $rules->add($rules->isUnique(['email']), 'isUnique', [
+            'message' => "This email is already registered with an account."
+        ]);
 
         return $rules;
     }

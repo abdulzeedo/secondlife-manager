@@ -44,6 +44,7 @@ class RepairsTable extends Table
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
+        $this->addBehavior('AuditStash.AuditLog');
     }
 
     /**
@@ -89,5 +90,44 @@ class RepairsTable extends Table
         $rules->add($rules->existsIn(['item_id'], 'Phones'));
 
         return $rules;
+    }
+
+    /**
+     * @param null $key
+     * @return array|mixed array with just the field specified in $key or all default field values
+     */
+    public function getDefaultValues($key = null) {
+        $values = [
+            'status' => [
+                ['value' => 'Repair created', 'text' => 'Repair created'],
+                ['value' => 'In repair', 'text' => 'In repair'],
+                ['value' => 'Repaired', 'text' => 'Repaired', 'data-subtext' => 'Inspection phase'],
+                ['value' => 'Testing', 'text' => 'Testing', 'data-subtext' => 'Test thoroughly'],
+                ['value' => 'Complete', 'text' => 'Complete', 'data-subtext' => 'Great!'],
+                ['value' => 'Failed', 'text' => 'Failed', 'data-subtext' => "Don't worry!"
+                                                               . "Just write some details below."],
+                ['value' => 'Missing component', 'text' => 'Missing component', 'data-subtext' => "Out of Stock Replacement part"]
+            ],
+            'reason' => [
+                ['value' => 'LCD', 'text' => 'LCD'],
+                ['value' => 'Battery', 'text' => 'Battery'],
+                ['value' => 'Audio', 'text' => 'Audio'],
+                ['value' => 'Microphone', 'text' => 'Microphone'],
+                ['value' => 'Flash', 'text' => 'Flash'],
+                ['value' => 'Back Camera', 'text' => 'Back Camera'],
+                ['value' => 'Front Camera', 'text' => 'Front Camera'],
+                ['value' => 'Proximity Sensor', 'text' => 'Proximity Sensor'],
+                ['value' => 'Home button', 'text' => 'Home Button'],
+                ['value' => 'Power button', 'text' => 'Power Button'],
+                ['value' => 'Volume buttons', 'text' => 'Volume Buttons'],
+                ['value' => 'Charging port', 'text' => 'Charging port'],
+                ['value' => 'GSM antenna', 'text' => 'GSM antenna', 'data-subtext' => 'No signal at all, or pat pat issue!'],
+                ['value' => 'Other', 'text' => 'Other', 'data-subtext' => 'Wright some details in comments!'],
+            ]
+        ];
+        if ($key)
+            return $values[$key];
+
+        return $values;
     }
 }

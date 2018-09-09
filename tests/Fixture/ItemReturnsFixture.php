@@ -55,5 +55,25 @@ class ItemReturnsFixture extends TestFixture
             'created' => '2018-07-05 18:06:57',
             'modified' => '2018-07-05 18:06:57'
         ],
+        [
+            'id' => 2,
+            'reason' => 'Lorem ipsum dolor sit amet',
+            'status' => 'Lorem ipsum dolor sit amet',
+            'refund' => 'Lorem ipsum dolor sit amet',
+            'comments' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
+            'item_id' => 1,
+            'created' => '2018-07-05 18:06:57',
+            'modified' => '2018-07-05 18:06:57'
+        ],
+        [
+            'id' => 3,
+            'reason' => 'Lorem ipsum dolor sit amet',
+            'status' => 'Lorem ipsum dolor sit amet',
+            'refund' => 'Lorem ipsum dolor sit amet',
+            'comments' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
+            'item_id' => 1,
+            'created' => '2018-07-05 18:06:57',
+            'modified' => '2018-07-05 18:06:57'
+        ],
     ];
 }

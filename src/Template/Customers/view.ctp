@@ -32,11 +32,11 @@
         </tr>
         <tr>
             <th scope="row"><?= __('Created') ?></th>
-            <td><?= h($customer->created) ?></td>
+            <td><?= h($this->Time->i18nFormat($customer->created)) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Modified') ?></th>
-            <td><?= h($customer->modified) ?></td>
+            <td><?= h($this->Time->i18nFormat($customer->modified)) ?></td>
         </tr>
     </table>
     <div class="row">
@@ -60,8 +60,8 @@
                 <td><?= h($transactions->id) ?></td>
                 <td><?= h($transactions->customer_id) ?></td>
                 <td><?= h($transactions->item_id) ?></td>
-                <td><?= h($transactions->created) ?></td>
-                <td><?= h($transactions->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($transactions->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($transactions->modified)) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['controller' => 'Transactions', 'action' => 'view', $transactions->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['controller' => 'Transactions', 'action' => 'edit', $transactions->id]) ?>

@@ -96,4 +96,5 @@ class ReturnsTable extends Table
 
         return $rules;
     }
+
 }

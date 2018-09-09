@@ -32,11 +32,11 @@
         </tr>
         <tr>
             <th scope="row"><?= __('Created') ?></th>
-            <td><?= h($supplier->created) ?></td>
+            <td><?= h($this->Time->i18nFormat($supplier->created)) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Modified') ?></th>
-            <td><?= h($supplier->modified) ?></td>
+            <td><?= h($this->Time->i18nFormat($supplier->modified)) ?></td>
         </tr>
     </table>
     <div class="row">
@@ -77,8 +77,8 @@
                 <td><?= h($phones->grade) ?></td>
                 <td><?= h($phones->status) ?></td>
                 <td><?= h($phones->storage_id) ?></td>
-                <td><?= h($phones->created) ?></td>
-                <td><?= h($phones->modified) ?></td>
+                <td><?= h($this->Time->i18nFormat($phones->created)) ?></td>
+                <td><?= h($this->Time->i18nFormat($phones->modified)) ?></td>
                 <td><?= h($phones->comments) ?></td>
                 <td><?= h($phones->model_id) ?></td>
                 <td><?= h($phones->colour_id) ?></td>

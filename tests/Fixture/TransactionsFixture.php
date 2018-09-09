@@ -20,6 +20,7 @@ class TransactionsFixture extends TestFixture
         'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
         'customer_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'item_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
+        'date' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         '_indexes' => [
@@ -50,6 +51,23 @@ class TransactionsFixture extends TestFixture
                 'id' => 1,
                 'customer_id' => 1,
                 'item_id' => 1,
+                'date' => '2018-07-12 12:47:34',
+                'created' => '2018-07-12 12:47:34',
+                'modified' => '2018-07-12 12:47:34'
+            ],
+            [
+                'id' => 2,
+                'customer_id' => 1,
+                'item_id' => 1,
+                'date' => '2018-07-12 12:47:34',
+                'created' => '2018-07-12 12:47:34',
+                'modified' => '2018-07-12 12:47:34'
+            ],
+            [
+                'id' => 3,
+                'customer_id' => 2,
+                'item_id' => 1,
+                'date' => '2018-07-12 12:47:34',
                 'created' => '2018-07-12 12:47:34',
                 'modified' => '2018-07-12 12:47:34'
             ],

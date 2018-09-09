@@ -33,4 +33,8 @@ class Colour extends Entity
         'model_colours' => true,
         'phones' => true
     ];
+
+    protected function _getColourName($colourName) {
+        return ucwords($colourName);
+    }
 }
