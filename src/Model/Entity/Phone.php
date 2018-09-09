@@ -239,7 +239,7 @@ class Phone extends Entity
                 $verbalized[] = [
                     'source' => $entity,
                     'user' => $user->email,
-                    'id' => $logs->id,
+                    'id' => $logs->primary_key,
                     'message' => "$user->email has created this new $entity entry.",
                     'updates' => [],
                     'type' => 'created',
@@ -280,7 +280,7 @@ class Phone extends Entity
                 $verbalized[] = [
                     'source' => $entity,
                     'user' => $user->email,
-                    'id' => $logs->id,
+                    'id' => $logs->primary_key,
                     'message' => "$user->email has updated $entity entries.",
                     'updates' => $changesVerbalized,
                     'type' => 'updated',
@@ -291,7 +291,7 @@ class Phone extends Entity
                 $verbalized[] = [
                     'source' => $entity,
                     'user' => $user->email,
-                    'id' => $logs->id,
+                    'id' => $logs->primary_key,
                     'message' => "$user->email has deleted this $entity.",
                     'updates' => [],
                     'type' => 'deleted',

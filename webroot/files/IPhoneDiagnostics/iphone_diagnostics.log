@@ -1,0 +1,11 @@
+2018-08-28 04:00:08.365 INFO - <module>: Terminated by keyboard
+2018-08-28 04:00:08.378 DEBUG - _new_conn: Starting new HTTP connection (1): localhost:8888
+2018-08-28 04:00:08.380 ERROR - post: HTTPConnectionPool(host='localhost', port=8888): Max retries exceeded with url: /phonesApi/disconnectAllConnectedPhones (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10193e290>: Failed to establish a new connection: [Errno 61] Connection refused',))
+Traceback (most recent call last):
+  File "IPhoneDiagnostics.py", line 27, in post
+  File "requests/api.py", line 112, in post
+  File "requests/api.py", line 58, in request
+  File "requests/sessions.py", line 512, in request
+  File "requests/sessions.py", line 622, in send
+  File "requests/adapters.py", line 513, in send
+ConnectionError: HTTPConnectionPool(host='localhost', port=8888): Max retries exceeded with url: /phonesApi/disconnectAllConnectedPhones (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10193e290>: Failed to establish a new connection: [Errno 61] Connection refused',))
