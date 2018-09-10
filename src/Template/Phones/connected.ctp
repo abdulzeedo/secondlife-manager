@@ -192,6 +192,7 @@
 
                     <div><div>
                     <?= $this->element('Common/repairs') ?>
+                    <?= $this->element('Common/audit_logs') ?>
 
 
             <?= $this->element('Common/modal') ?>
