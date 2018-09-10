@@ -231,3 +231,4 @@ Plugin::load('Migrations');
 Plugin::load('CakePdf', ['bootstrap' => true]);
 
 Plugin::load('AuditStash');
+Plugin::load('SoftDelete');

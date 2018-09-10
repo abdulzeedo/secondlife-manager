@@ -6,6 +6,8 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use SoftDelete\Model\Table\Entity\SoftDeleteAwareInterface;
+use SoftDelete\Model\Table\SoftDeleteTrait;
 
 /**
  * Transactions Model
@@ -23,8 +25,24 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class TransactionsTable extends Table
+class TransactionsTable extends Table implements SoftDeleteAwareInterface
 {
+    use SoftDeleteTrait;
+
+    public function getSoftDeleteField()
+    {
+        return 'deleted';
+    }
+
+    public function getSoftDeleteValue()
+    {
+        return date('Y-m-d H:i:s');
+    }
+
+    public function getRestoreValue()
+    {
+        return null;
+    }
 
     /**
      * Initialize method
@@ -80,4 +98,5 @@ class TransactionsTable extends Table
         $rules->add($rules->existsIn(['item_id'], 'Phones'));
         return $rules;
     }
+
 }

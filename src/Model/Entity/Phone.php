@@ -188,7 +188,7 @@ class Phone extends Entity
         $verbalizedLogs = new Collection([]);
         $verbalizedLogs = $verbalizedLogs->append($this->verbalisePhoneAuditTrails($phoneLogs->all()));
 
-        $returns = TableRegistry::get('ItemReturns')->find('all')
+        $returns = TableRegistry::get('ItemReturns')->find('all', ['withDeleted'])
             ->where(['item_id' => $this->_properties['id']])
             ->select('id')->extract('id');
         // Get returns audit
@@ -198,7 +198,7 @@ class Phone extends Entity
                 ->andWhere(['primary_key IN' => $returns->toList()]);
             $verbalizedLogs = $verbalizedLogs->append($this->verbalisePhoneAuditTrails($returnsLogs->all()));
         }
-        $repairs = TableRegistry::get('Repairs')->find('all')
+        $repairs = TableRegistry::get('Repairs')->find('all', ['withDeleted'])
             ->where(['item_id' => $this->_properties['id']])->extract('id');
         // Get repairs audits
         if (!$repairs->isEmpty()) {
@@ -208,7 +208,7 @@ class Phone extends Entity
             $verbalizedLogs = $verbalizedLogs->append($this->verbalisePhoneAuditTrails($repairLogs->all()));
         }
 
-        $transactions = TableRegistry::get('Transactions')->find('all')
+        $transactions = TableRegistry::get('Transactions')->find('all', ['withDeleted'])
             ->where(['item_id' => $this->_properties['id']])->extract('id');
         // Get transaction audits
         if (!$transactions->isEmpty()) {

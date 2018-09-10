@@ -5,6 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use SoftDelete\Model\Table\Entity\SoftDeleteAwareInterface;
+use SoftDelete\Model\Table\SoftDeleteTrait;
 
 /**
  * Repairs Model
@@ -21,8 +23,24 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class RepairsTable extends Table
+class RepairsTable extends Table implements SoftDeleteAwareInterface
 {
+    use SoftDeleteTrait;
+
+    public function getSoftDeleteField()
+    {
+        return 'deleted';
+    }
+
+    public function getSoftDeleteValue()
+    {
+        return date('Y-m-d H:i:s');
+    }
+
+    public function getRestoreValue()
+    {
+        return null;
+    }
 
     /**
      * Initialize method
