@@ -235,18 +235,7 @@ class Phone extends Entity
             $entity = str_ireplace('_', ' ', substr($logs->source, 0, -1));
             $meta = json_decode($logs->meta);
             $user = $User->get($meta->user);
-            if ($logs->type === 'create') {
-                $verbalized[] = [
-                    'source' => $entity,
-                    'user' => $user->email,
-                    'id' => $logs->primary_key,
-                    'message' => "$user->email has created this new $entity entry.",
-                    'updates' => [],
-                    'type' => 'created',
-                    "date" => $logs->created,
-                ];
-            }
-            else if ($logs->type === 'update') {
+            if ($logs->type === 'create' || $logs->type === 'update') {
                 $original = json_decode($logs->original, true);
                 $changed = json_decode($logs->changed, true);
                 $changesVerbalized = [];
@@ -281,9 +270,9 @@ class Phone extends Entity
                     'source' => $entity,
                     'user' => $user->email,
                     'id' => $logs->primary_key,
-                    'message' => "$user->email has updated $entity entries.",
+                    'message' => "$user->email has {$logs->type}d $entity entries.",
                     'updates' => $changesVerbalized,
-                    'type' => 'updated',
+                    'type' => $logs->type.'d',
                     "date" => $logs->created,
                 ];
             }

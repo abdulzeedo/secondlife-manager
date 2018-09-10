@@ -136,36 +136,9 @@
         <?= $this->element('Common/repairs') ?>
 
         <?= $this->element('Common/returns') ?>
-        <?= $this->Panel->create(); ?>
-        <?= $this->Panel->header();?>
-        <h4>History of actions</h4>
-        <?= $this->Panel->body(['class' => 'logs-history']); ?>
-        <?php foreach($phone->audit_trail as $logs): ?>
-            <div class="alert log-message alert-<?php echo ($logs['type'] === 'created' ? 'info'
-                                        : ($logs['type'] === 'updated' ? 'warning' : 'danger')) ?>" role="alert">
-                <?php if ($logs["type"] === 'created'): ?>
-                    <strong><?= $logs["user"] ?></strong> has created a new
-                    <strong><?= $logs["source"] ?> #<?= $logs["id"] ?></strong>.
-                <?php elseif ($logs["type"] === 'updated'): ?>
-                    <strong><?= $logs["user"] ?></strong> has updated
-                    <strong><?= $logs["source"] ?> #<?= $logs["id"] ?></strong>.
-                <?php else: ?>
-                    <strong><?= $logs["user"] ?></strong> has deleted
-                    <strong><?= $logs["source"] ?> #<?= $logs["id"] ?></strong>.
-                <?php endif; ?>
-                <br>
-                <?php foreach($logs["updates"] as $update): ?>
-                    <hr>
-                    <strong><?= ucfirst($update["property"]) ?></strong> has changed from '<?= $update["original"] ?>'
-                    to '<?= $update["changed"] ?>'
-                <?php endforeach; ?>
 
-            </div>
-            <div class="time">
-                <?= h($this->Time->i18nFormat($logs["date"])) ?>
-            </div>
-        <?php endforeach; ?>
-        <?= $this->Panel->end(); ?>
+        <?= $this->element('Common/audit_logs') ?>
+
 
     </div>
 </div>
