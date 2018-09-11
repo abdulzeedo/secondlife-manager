@@ -3,6 +3,7 @@ namespace App\Model\Entity;
 
 use Cake\Collection\Collection;
 use Cake\Error\Debugger;
+use Cake\I18n\Time;
 use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -261,8 +262,8 @@ class Phone extends Entity
                     }
                     if ($changed[$origProperty] !== '' && $origValue !== '')
                     $changesVerbalized[] = [
-                        'original' => $origValue,
-                        'changed' => $changed[$origProperty],
+                        'original' => strtotime($origValue) !== false ? Time::createFromTimestamp(strtotime($origValue)) : $origValue,
+                        'changed' => strtotime($changed[$origProperty]) ? date(strtotime($changed[$origProperty])) : $changed[$origProperty],
                         'property' => substr($origProperty, -3) == '_id'
                                         ? str_ireplace('_', ' ', substr($origProperty, 0, -3))
                                         : str_ireplace('_', ' ', $origProperty),

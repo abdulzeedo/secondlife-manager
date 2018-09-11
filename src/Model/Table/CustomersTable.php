@@ -50,6 +50,7 @@ class CustomersTable extends Table
             'targetForeignKey' => 'item_id',
             'saveStrategy' => 'append'
         ]);
+        $this->addBehavior('AuditStash.AuditLog');
     }
 
     /**
