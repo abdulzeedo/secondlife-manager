@@ -245,7 +245,8 @@ class Phone extends Entity
                         if(TableRegistry::exists(ucfirst($probableTableName))) {
                             $Table = TableRegistry::get($probableTableName);
                             $displayField = $Table->getDisplayField();
-                            $origValue = $Table->get($origValue)->get($displayField);
+                            if ($origValue !== null)
+                                $origValue = $Table->get($origValue)->get($displayField);
                             $changed[$origProperty] = $Table->get($changed[$origProperty])->get($displayField);
                         }
                     }
@@ -258,6 +259,7 @@ class Phone extends Entity
                         $origValue = $this->$functionName($origValue);
                         $changed[$origProperty] = $this->$functionName($changed[$origProperty]);
                     }
+                    if ($changed[$origProperty] !== '' && $origValue !== '')
                     $changesVerbalized[] = [
                         'original' => $origValue,
                         'changed' => $changed[$origProperty],
