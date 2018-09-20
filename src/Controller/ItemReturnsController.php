@@ -5,6 +5,7 @@ use App\Controller\AppController;
 use App\Model\Entity\Phone;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
+use Cake\ORM\TableRegistry;
 
 /**
  * ItemReturns Controller
@@ -48,7 +49,7 @@ class ItemReturnsController extends AppController
     public function view($id = null)
     {
         $itemReturn = $this->ItemReturns->get($id, [
-            'contain' => ['Phones']
+            'contain' => ['Phones', 'ItemReturnsTypes']
         ]);
 
         $this->set('itemReturn', $itemReturn);
@@ -90,20 +91,28 @@ class ItemReturnsController extends AppController
      */
     public function edit($id = null)
     {
+        $this->viewBuilder()->setLayout('bootstrap');
         $itemReturn = $this->ItemReturns->get($id, [
             'contain' => []
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $itemReturn = $this->ItemReturns->patchEntity($itemReturn, $this->request->getData());
-            if ($this->ItemReturns->save($itemReturn)) {
-                $this->Flash->success(__('The item return has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The item return could not be saved. Please, try again.'));
+//            if ($this->ItemReturns->save($itemReturn)) {
+//                $this->Flash->success(__('The item return has been saved.'));
+//
+//                return $this->redirect(['action' => 'index']);
+//            }
+//            $this->Flash->error(__('The item return could not be saved. Please, try again.'));
         }
-        $phones = $this->ItemReturns->Phones->find('list', ['limit' => 200]);
-        $this->set(compact('itemReturn', 'phones'));
+        $itemReturnsTypes = $this->ItemReturns->ItemReturnsTypes
+            ->find('list', ['limit' => 200]);
+        $itemReturnsTypeStatus = $this->ItemReturns->ItemReturnsTypeStatus
+            ->find('all', ['limit' => 200]);
+        $itemReturnsStatus = $this->ItemReturns->ItemReturnsStatus
+            ->find('list', ['limit' => 200]);
+        $phones = $this->ItemReturns->Phones->find('list', ['limit' => 1]);
+        $this->set(compact('itemReturn', 'phones', 'itemReturnsTypes',
+                            'itemReturnsTypeStatus', 'itemReturnsStatus'));
     }
 
     /**

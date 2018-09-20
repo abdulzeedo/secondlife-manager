@@ -12,6 +12,9 @@ use SoftDelete\Model\Table\SoftDeleteTrait;
  * ItemReturns Model
  *
  * @property \App\Model\Table\PhonesTable|\Cake\ORM\Association\BelongsTo $Phones
+ * @property \App\Model\Table\ItemReturnsTypesTable|\Cake\ORM\Association\BelongsTo $ItemReturnsTypes
+ * @property \App\Model\Table\ItemReturnsTypeStatusTable|\Cake\ORM\Association\BelongsTo $ItemReturnsTypeStatus
+ * @property \App\Model\Table\ItemReturnsStatusTable|\Cake\ORM\Association\BelongsTo $ItemReturnsStatus
  *
  * @method \App\Model\Entity\ItemReturn get($primaryKey, $options = [])
  * @method \App\Model\Entity\ItemReturn newEntity($data = null, array $options = [])
@@ -26,21 +29,6 @@ use SoftDelete\Model\Table\SoftDeleteTrait;
 class ItemReturnsTable extends Table implements SoftDeleteAwareInterface
 {
     use SoftDeleteTrait;
-
-    public function getSoftDeleteField()
-    {
-        return 'deleted';
-    }
-
-    public function getSoftDeleteValue()
-    {
-        return date('Y-m-d H:i:s');
-    }
-
-    public function getRestoreValue()
-    {
-        return null;
-    }
 
     /**
      * Initialize method
@@ -62,8 +50,28 @@ class ItemReturnsTable extends Table implements SoftDeleteAwareInterface
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
+        $this->belongsTo('ItemReturnsTypes');
+        $this->belongsTo('ItemReturnsStatus');
+        $this->belongsTo('ItemReturnsTypeStatus');
         $this->addBehavior('AuditStash.AuditLog');
     }
+
+    public function getSoftDeleteField()
+    {
+        return 'deleted';
+    }
+
+    public function getSoftDeleteValue()
+    {
+        return date('Y-m-d H:i:s');
+    }
+
+    public function getRestoreValue()
+    {
+        return null;
+    }
+
+
 
     /**
      * Default validation rules.

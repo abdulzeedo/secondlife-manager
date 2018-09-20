@@ -27,6 +27,10 @@
             <td><?= h($itemReturn->status) ?></td>
         </tr>
         <tr>
+            <th scope="row"><?= __('Return type') ?></th>
+            <td><?= $itemReturn->item_returns_type->name ?></td>
+        </tr>
+        <tr>
             <th scope="row"><?= __('Refund') ?></th>
             <td><?= h($itemReturn->refund) ?></td>
         </tr>

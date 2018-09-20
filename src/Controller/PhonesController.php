@@ -119,7 +119,8 @@ class PhonesController extends AppController
 
         $repairsReason = $this->Phones->Repairs->getDefaultValues('reason');
 
-        $this->set('phones', $query);
+//        $this->set('phones', $query);
+        $this->set('phones', $query->limit(10));
         $this->set(compact('storages', 'models', 'colours', 'users', 'suppliers', 'repairs', 'repairsReason', 'customers'));
     }
 

@@ -77,4 +77,11 @@ $(function() {
                 });
 
     });
+    /**
+     * Event listener for item return tracking field
+     *
+     * routes: itemReturn modal/add/edit
+     */
+    // $('#customer-return-tracking-button').on('click', showTrackingField);
+    // $('#customer-resent-tracking-button').on('click', showTrackingField);
 });
