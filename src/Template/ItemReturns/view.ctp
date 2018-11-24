@@ -35,8 +35,12 @@
             <td><?= h($itemReturn->refund) ?></td>
         </tr>
         <tr>
+            <th scope="row"><?= __('Exchanged with item') ?></th>
+            <td><?= $itemReturn->has('exchanged_with_item') ? $itemReturn->exchanged_with_item->imiei : '' ?></td>
+        </tr>
+        <tr>
             <th scope="row"><?= __('Phone') ?></th>
-            <td><?= $itemReturn->has('phone') ? $this->Html->link($itemReturn->phone->label, ['controller' => 'Phones', 'action' => 'view', $itemReturn->phone->id]) : '' ?></td>
+            <td><?= $itemReturn->has('phones') ? $this->Html->link($itemReturn->phones['imiei'], ['controller' => 'Phones', 'action' => 'view', $itemReturn->phones['id']]) : '' ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Id') ?></th>

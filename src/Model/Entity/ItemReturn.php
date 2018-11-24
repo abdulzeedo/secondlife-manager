@@ -40,6 +40,7 @@ class ItemReturn extends Entity
         'customer_return_tracking' => true,
         'customer_resent_tracking' => true,
         'exchanged_with_item' => true,
+        'exchanged_with_item_id' => true,
         'refund_amount' => true,
         'item_returns_type_status_id' => true,
         'item_returns_type_status' => true,
@@ -47,7 +48,7 @@ class ItemReturn extends Entity
         'item_returns_status' => true,
         'created' => true,
         'modified' => true,
-        'phone' => true,
-        'return_date' => true,
+        'phones' => true,
+        'request_date' => true,
     ];
 }

@@ -66,7 +66,13 @@ class PhonesTable extends Table
         ]);
 
         $this->hasMany('ItemReturns', [
-            'foreignKey' => 'item_id'
+            'foreignKey' => 'item_id',
+            'propertyName' => 'phones',
+        ]);
+        $this->hasMany('exchanged_with_item', [
+            'className' => 'ItemReturns',
+            'foreignKey' => 'exchanged_with_item_id',
+            'propertyName' => 'exchanged_with_item'
         ]);
 
         $this->hasMany('PhoneRecords', [

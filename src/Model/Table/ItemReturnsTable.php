@@ -46,9 +46,17 @@ class ItemReturnsTable extends Table implements SoftDeleteAwareInterface
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Phones', [
+        // TODO: phones property is not being populated with virtual fields
+        $this->belongsTo('phones', [
             'foreignKey' => 'item_id',
+            'propertyName' => 'phones',
             'joinType' => 'INNER'
+        ]);
+        $this->belongsTo('exchanged_with_item', [
+            'className' => 'Phones',
+            'foreignKey' => 'exchanged_with_item_id',
+            'propertyName' => 'exchanged_with_item',
+            'joinType' => 'LEFT'
         ]);
         $this->belongsTo('ItemReturnsTypes');
         $this->belongsTo('ItemReturnsStatus');
@@ -92,16 +100,26 @@ class ItemReturnsTable extends Table implements SoftDeleteAwareInterface
             ->notEmpty('reason');
 
         $validator
-            ->scalar('status')
-            ->maxLength('status', 255)
-            ->requirePresence('status', 'create')
-            ->notEmpty('status');
+            ->scalar('request_date')
+            ->requirePresence('request_date', 'create', 'The return request date is required')
+            ->notEmpty('request_date');
+
+//        $validator
+//            ->scalar('status')
+//            ->maxLength('status', 255)
+//            ->requirePresence('status', 'create')
+//            ->notEmpty('status');
+
+//        $validator
+//            ->scalar('refund')
+//            ->maxLength('refund', 255)
+//            ->requirePresence('refund', 'create')
+//            ->notEmpty('refund');
 
         $validator
-            ->scalar('refund')
-            ->maxLength('refund', 255)
-            ->requirePresence('refund', 'create')
-            ->notEmpty('refund');
+            ->greaterThanOrEqual('refund_amount', 0)
+            ->maxLength('refund_amount', 255)
+            ->allowEmpty('refund_amount');
 
         $validator
             ->scalar('comments')
@@ -120,6 +138,7 @@ class ItemReturnsTable extends Table implements SoftDeleteAwareInterface
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['item_id'], 'Phones'));
+        $rules->add($rules->existsIn(['exchanged_with_item_id'], 'Phones'));
 
         return $rules;
     }
