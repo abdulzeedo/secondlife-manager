@@ -37,4 +37,8 @@ class ItemReturnsTypeStatus extends Entity
         'item_returns_type' => true,
         'item_returns' => true
     ];
+    protected function _getName($name)
+    {
+        return ucwords($name);
+    }
 }

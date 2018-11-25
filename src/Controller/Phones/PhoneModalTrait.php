@@ -31,19 +31,56 @@ trait PhoneModalTrait
     }
 
     public function editReturnModal ($id = null) {
-        $return = $this->Phones->ItemReturns->get($id, [
-            'contain' => []
+        $itemReturn = $this->Phones->ItemReturns->get($id, [
+            'contain' => ['Phones', 'exchanged_with_item']
         ]);
 
-        $this->Modal->editOrAdd($this->Phones->ItemReturns, $id, $return);
+        // Prepare the $itemReturn before passing it to the standard modal method to save and manage the layout
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $itemReturnStatusOrTypeStatus = $this->request->getData('item_returns_status_or_type_id');
+            // Only one of the two fields can be non-null at any moment
+            // if the value ends with -type-status then replace it
+            if (substr($itemReturnStatusOrTypeStatus, 1) === '-type-status') {
+                $itemReturn->item_returns_status_id = null;
+                $itemReturn->item_returns_type_status_id = str_replace('-type-status', '',
+                    $itemReturnStatusOrTypeStatus);
+            }
+            else {
+                $itemReturn->item_returns_type_status_id = null;
+                $itemReturn->item_returns_status_id = $itemReturnStatusOrTypeStatus;
+            }
+
+            $itemReturn = $this->Phones->ItemReturns->patchEntity($itemReturn, $this->request->getData());
+            if ($itemReturn->exchanged_with_item_id === '')
+                $itemReturn->exchanged_with_item_id = null;
+            // Convert string to date object
+            $date = new Time($this->request->getData('request_date'), 'Europe/Rome'); // TODO: timezone to user
+            $date = $date->timezone('UTC');
+            $itemReturn->request_date = $date;
+            if (!$this->Phones->ItemReturns->save($itemReturn)) {
+                $this->response = $this->response->withStatus(400);
+            }
+        }
+        $this->Modal->editOrAddLayout($this->Phones->ItemReturns, $id, $itemReturn);
 
         $phone = $this->Phones->find('all')
-            ->where(['Phones.id' => $return->item_id])
+            ->where(['Phones.id' => $itemReturn->item_id])
             ->first();
 
         $phonesList[] = ['value' => $phone->id, 'text' => $phone->imiei, 'data-subtext' => $phone->label];
         $values = $this->Phones->ItemReturns->getDefaultValues();
-        $this->set(compact('return', 'phonesList', 'values'));
+
+        // Get all the lists from different tables
+        $itemReturnsTypes = $this->Phones->ItemReturns->ItemReturnsTypes
+            ->find('list', ['limit' => 200]);
+        $itemReturnsTypeStatus = $this->Phones->ItemReturns->ItemReturnsTypeStatus
+            ->find('all', ['limit' => 200]);
+        $itemReturnsStatus = $this->Phones->ItemReturns->ItemReturnsStatus
+            ->find('list', ['limit' => 200]);
+        $this->set(compact('itemReturn', 'phonesList', 'itemReturnsTypes',
+            'itemReturnsTypeStatus', 'itemReturnsStatus', 'values'));
+
+        // $this->set(compact('return', 'phonesList', 'values'));
 
     }
 
@@ -72,20 +109,31 @@ trait PhoneModalTrait
     }
 
     public function addReturnModal ($id = null) {
-        $return = $this->Phones->ItemReturns->newEntity();
+        $itemReturn = $this->Phones->ItemReturns->newEntity();
 
         if ($id)
-            $return->item_id = $id;
+            $itemReturn->item_id = $id;
 
-        $this->Modal->editOrAdd($this->Phones->ItemReturns, $id, $return);
+        $this->Modal->editOrAdd($this->Phones->ItemReturns, $id, $itemReturn);
 
         $phone = $this->Phones->find('all')
-            ->where(['Phones.id' => $return->item_id])
+            ->where(['Phones.id' => $itemReturn->item_id])
             ->first();
 
         $phonesList[] = ['value' => $phone->id, 'text' => $phone->imiei, 'data-subtext' => $phone->label];
         $values = $this->Phones->itemReturns->getDefaultValues();
-        $this->set(compact('return', 'phonesList', 'values'));
+
+        // Get all the lists from different tables
+        $itemReturnsTypes = $this->Phones->ItemReturns->ItemReturnsTypes
+            ->find('list', ['limit' => 200]);
+        $itemReturnsTypeStatus = $this->Phones->ItemReturns->ItemReturnsTypeStatus
+            ->find('all', ['limit' => 200]);
+        $itemReturnsStatus = $this->Phones->ItemReturns->ItemReturnsStatus
+            ->find('list', ['limit' => 200]);
+        $this->set(compact('itemReturn', 'phonesList', 'itemReturnsTypes',
+            'itemReturnsTypeStatus', 'itemReturnsStatus', 'values'));
+
+        //$this->set(compact('return', 'phonesList', 'values'));
         $this->viewBuilder()->setTemplate('edit_return_modal');
     }
 

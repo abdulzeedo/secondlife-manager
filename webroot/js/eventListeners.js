@@ -13,6 +13,18 @@ $(function() {
                 format: 'DD-MM-YYYY H:m:s'
             });
         }
+        /**
+         * Add Add/Edit item return form initialization
+         */
+        if ($('.modal .itemReturns').is(':visible')) {
+            changeSelect();
+            $('#returnDateTimePicker').datetimepicker({
+                format: DATE_FORMAT,
+            });
+
+        }
+
+
     });
     /**
      * Event triggered when a form is being submitted via ajax.
@@ -80,7 +92,7 @@ $(function() {
     /**
      * Event listener for updated imiei list
      *
-     * type: onChange
+     * type: on input
      */
     $('body').on('input', '#exchanged-with-item-id .form-control', getListImiei);
 
@@ -115,7 +127,6 @@ $(function() {
             exchangeWithItemField.hide();
             exchangeWithItemField.val('');
         }
-
         itemReturnsStatus = Object.values(itemReturnsStatus);
         // Get only the type status related to the selected type
         var currentTypeStatus =
@@ -137,6 +148,9 @@ $(function() {
         }
         // Add remaining global status (close)
         itemReturnsStatusOrTypeField.add(new Option(itemReturnsStatus[itemReturnsStatus.length - 1], itemReturnsStatus.length));
+
+        // For modals: update selectpicker
+        $('.selectpicker').selectpicker('refresh');
     };
 
     /**
@@ -144,7 +158,7 @@ $(function() {
      *
      * type: onChange
      */
-    $('#item-returns-type-id').on('change', window.changeSelect);
+    $('body').on('change', '.itemReturns #item-returns-type-id', window.changeSelect);
 
 
     /**
@@ -152,8 +166,8 @@ $(function() {
      *
      * routes: itemReturn modal/add/edit
      */
-    $('#customer-return-tracking-button').on('click', showTrackingField);
-    $('#customer-resent-tracking-button').on('click', showTrackingField);
+    $('body').on('click', '#customer-return-tracking-button', showTrackingField);
+    $('body').on('click', '#customer-resent-tracking-button', showTrackingField);
     /**
      * Show the requested tracking field
      *

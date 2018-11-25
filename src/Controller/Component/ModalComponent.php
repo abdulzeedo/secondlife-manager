@@ -22,6 +22,8 @@ class ModalComponent extends Component
     }
 
     /**
+     * Used by all modals which do not process the information
+     *
      * @param Cake\ORM\Table|null $table
      * @param $id
      * @param Cake\ORM\Model $entity
@@ -43,6 +45,19 @@ class ModalComponent extends Component
             }
 
         }
+        $controller->set(compact('viewToExtend'));
+    }
+
+    public function editOrAddLayout($table = null, $id, $entity) {
+        /** @var Controller $controller */
+        $controller = $this->_registry->getController();
+        $controller->viewBuilder()->setLayout("bootstrap");
+        $viewToExtend = "/Common/Form/form";
+        if ($controller->request->is('ajax')) {
+            $viewToExtend = "/Common/Modal/modal";
+            $controller->viewBuilder()->setLayout(false);
+        }
+
         $controller->set(compact('viewToExtend'));
     }
 

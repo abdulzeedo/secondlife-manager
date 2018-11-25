@@ -30,4 +30,9 @@ class ItemReturnsType extends Entity
         'created' => true,
         'modified' => true
     ];
+
+    protected function _getName($name)
+    {
+        return ucwords($name);
+    }
 }
