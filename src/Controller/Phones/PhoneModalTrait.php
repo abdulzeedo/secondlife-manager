@@ -114,7 +114,33 @@ trait PhoneModalTrait
         if ($id)
             $itemReturn->item_id = $id;
 
-        $this->Modal->editOrAdd($this->Phones->ItemReturns, $id, $itemReturn);
+        // Prepare the $itemReturn before passing it to the standard modal method to save and manage the layout
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $itemReturnStatusOrTypeStatus = $this->request->getData('item_returns_status_or_type_id');
+            // Only one of the two fields can be non-null at any moment
+            // if the value ends with -type-status then replace it
+            if (substr($itemReturnStatusOrTypeStatus, 1) === '-type-status') {
+                $itemReturn->item_returns_status_id = null;
+                $itemReturn->item_returns_type_status_id = str_replace('-type-status', '',
+                    $itemReturnStatusOrTypeStatus);
+            }
+            else {
+                $itemReturn->item_returns_type_status_id = null;
+                $itemReturn->item_returns_status_id = $itemReturnStatusOrTypeStatus;
+            }
+
+            $itemReturn = $this->Phones->ItemReturns->patchEntity($itemReturn, $this->request->getData());
+            if ($itemReturn->exchanged_with_item_id === '')
+                $itemReturn->exchanged_with_item_id = null;
+            // Convert string to date object
+            $date = new Time($this->request->getData('request_date'), 'Europe/Rome'); // TODO: timezone to user
+            $date = $date->timezone('UTC');
+            $itemReturn->request_date = $date;
+            if (!$this->Phones->ItemReturns->save($itemReturn)) {
+                $this->response = $this->response->withStatus(400);
+            }
+        }
+        $this->Modal->editOrAddLayout($this->Phones->ItemReturns, $id, $itemReturn);
 
         $phone = $this->Phones->find('all')
             ->where(['Phones.id' => $itemReturn->item_id])

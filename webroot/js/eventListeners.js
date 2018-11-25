@@ -16,11 +16,13 @@ $(function() {
         /**
          * Add Add/Edit item return form initialization
          */
-        if ($('.modal .itemReturns').is(':visible')) {
-            changeSelect();
+        if ($('.modal .itemReturns')) {
             $('#returnDateTimePicker').datetimepicker({
                 format: DATE_FORMAT,
             });
+            if ($('.modal .itemReturns').is(':visible'))
+                changeSelect();
+
 
         }
 
