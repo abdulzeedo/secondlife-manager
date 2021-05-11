@@ -1,4 +1,4 @@
-# CakePHP Application Skeleton
+# An all-in-one platform to manage second hand Apple devices 
 
 [![Build Status](https://img.shields.io/travis/cakephp/app/master.svg?style=flat-square)](https://travis-ci.org/cakephp/app)
 [![License](https://img.shields.io/packagist/l/cakephp/app.svg?style=flat-square)](https://packagist.org/packages/cakephp/app)
@@ -43,6 +43,8 @@ automated upgrades, so you have to do any updates manually.
 
 Read and edit `config/app.php` and setup the `'Datasources'` and any other
 configuration relevant for your application.
+
+The configuration folder has some expired tokens. I have left them there just for future reference. 
 
 ## Layout
 
