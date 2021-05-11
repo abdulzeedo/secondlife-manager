@@ -50,8 +50,9 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     '/js/moment.min.js',
     '/js/palette.js',
     '/js/bootstrap-datetimepicker.min.js',
-    '/js/utility-functions.js'
-
+    '/js/utility-functions.js',
+    '/js/eventListeners.js',
+    '/js/bootstrap-local.js',
     ]); ?>
     <?= $this->Html->script('jquery-barcodeListener.js') ?>
     <?= $this->fetch('meta') ?>

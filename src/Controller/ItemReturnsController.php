@@ -5,6 +5,9 @@ use App\Controller\AppController;
 use App\Model\Entity\Phone;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
+use Cake\I18n\Date;
+use Cake\I18n\Time;
+use Cake\ORM\TableRegistry;
 
 /**
  * ItemReturns Controller
@@ -48,7 +51,7 @@ class ItemReturnsController extends AppController
     public function view($id = null)
     {
         $itemReturn = $this->ItemReturns->get($id, [
-            'contain' => ['Phones']
+            'contain' => ['Phones', 'ItemReturnsTypes', 'exchanged_with_item']
         ]);
 
         $this->set('itemReturn', $itemReturn);
@@ -90,20 +93,50 @@ class ItemReturnsController extends AppController
      */
     public function edit($id = null)
     {
+        $this->viewBuilder()->setLayout('bootstrap');
         $itemReturn = $this->ItemReturns->get($id, [
-            'contain' => []
+            'contain' => ['Phones', 'exchanged_with_item']
         ]);
+
         if ($this->request->is(['patch', 'post', 'put'])) {
+            $itemReturnStatusOrTypeStatus = $this->request->getData('item_returns_status_or_type_id');
+            // Only one of the two fields can be non-null at any moment
+            // if the value ends with -type-status then replace it
+            if (substr($itemReturnStatusOrTypeStatus, 1) === '-type-status') {
+                $itemReturn->item_returns_status_id = null;
+                $itemReturn->item_returns_type_status_id = str_replace('-type-status', '',
+                                                                        $itemReturnStatusOrTypeStatus);
+            }
+            else {
+                $itemReturn->item_returns_type_status_id = null;
+                $itemReturn->item_returns_status_id = $itemReturnStatusOrTypeStatus;
+            }
+
             $itemReturn = $this->ItemReturns->patchEntity($itemReturn, $this->request->getData());
+            if ($itemReturn->exchanged_with_item_id === '')
+                $itemReturn->exchanged_with_item_id = null;
+            // Convert string to date object
+            $date = new Time($this->request->getData('request_date'), 'Europe/Rome'); // TODO: timezone to user
+            $date = $date->timezone('UTC');
+            $itemReturn->request_date = $date;
+
             if ($this->ItemReturns->save($itemReturn)) {
                 $this->Flash->success(__('The item return has been saved.'));
-
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The item return could not be saved. Please, try again.'));
         }
-        $phones = $this->ItemReturns->Phones->find('list', ['limit' => 200]);
-        $this->set(compact('itemReturn', 'phones'));
+        // Get all the lists from different tables
+        $itemReturnsTypes = $this->ItemReturns->ItemReturnsTypes
+            ->find('list', ['limit' => 200]);
+        $itemReturnsTypeStatus = $this->ItemReturns->ItemReturnsTypeStatus
+            ->find('all', ['limit' => 200]);
+        $itemReturnsStatus = $this->ItemReturns->ItemReturnsStatus
+            ->find('list', ['limit' => 200]);
+        $phones = $this->ItemReturns->Phones->find('list', ['limit' => 1])
+            ->where(['id' => $itemReturn->item_id]);
+        $this->set(compact('itemReturn', 'phones', 'itemReturnsTypes',
+                            'itemReturnsTypeStatus', 'itemReturnsStatus'));
     }
 
     /**
